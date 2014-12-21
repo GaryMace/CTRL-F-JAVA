@@ -1,7 +1,7 @@
 package SliderPuzzle;
 
 import java.awt.Color;
-
+import java.awt.Point;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -11,7 +11,7 @@ import javax.swing.border.Border;
 public class Tile extends JLabel {
 	
 	private int moves[][] = { {0 , 0}, {0 , +1}, {0 , -1}, {+1 , 0}, {-1 , 0} };
-	private static boolean isOccupied[] = new boolean[16];
+	private static boolean isOccupied[][] = new boolean[4][4];
 	private static int locations[][] = new int[4][4];
 	private int x,y,number;
 	
@@ -33,22 +33,22 @@ public class Tile extends JLabel {
 		this.setHorizontalAlignment(SwingConstants.CENTER);
 		this.setLocation(20+x*76, 20+y*76);
 		this.setVisible(true);
-		isOccupied[number-1]= true;
+		isOccupied[y][x]= true;
 		locations[y][x] = number;
 		
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////
-	public void move() {
-		int tempx,tempy;
+	public void move(boolean randomizing) {
+		int cloneX,cloneY;
 		int i,count=0;
 		boolean checker;
-		tempx=x;
-		tempy=y;
-			
+		cloneX=x;
+		cloneY=y;
+		
 		for(i=0; i < moves.length; i++) {
-			checker =checkMove(tempy , tempx, i);
-			
+			checker =checkMove(cloneY , cloneX, i);
+		
 			if( checker ==true) {
 				count++;
 				break;
@@ -56,74 +56,57 @@ public class Tile extends JLabel {
 		}
 		
 		if(count ==1) {
-			this.setLocation(20+(tempx+=moves[i][1])*76, 20+(tempy+=moves[i][0])*76);
+			this.setLocation(20+(cloneX+=moves[i][1])*76, 20+(cloneY+=moves[i][0])*76);
 		}
 		
-		else {
+		if(!(randomizing) ==true && count !=1) {
 			JOptionPane.showMessageDialog(null,"No move possible");
+			
 		}
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////	
 	private boolean checkMove(int cloneY, int cloneX, int index) {
-		int tempi=cloneY, tempj=cloneX,temp=0;
-		tempi+= moves[index][0];
-		tempj+= moves[index][1];
-		System.out.println("Empty slot Y "+ tempi);
-		System.out.println("Empty slot X "+ tempj);
-		if(((tempi >=0 && tempi < 4) && (tempj>=0 && tempj < 4)) && isOccupied[locations[tempi][tempj]-1]==true ) {				//Move impossible
-			return false;
-		}
+		int emptyTileY=cloneY;
+		int emptyTileX=cloneX;
+		int temp=0;
 		
-		else if(((tempi >=0 && tempi < 4) && (tempj>=0 && tempj < 4)) && isOccupied[locations[tempi][tempj]-1]==false ) {		//If a move is possible
-			System.out.println("////////////////////////////////////////////////");
-			System.out.println("truth val at clicked index: "+ isOccupied[locations[cloneY][cloneX]-1] );
-			System.out.println("truth val at empty index: "+ isOccupied[locations[tempi][tempj]-1] );
-			System.out.println("////////////////////////////////////////////////");
-			System.out.println("Add "+ moves[index][0]+" to Y");
-			System.out.println("Add "+ moves[index][1]+" to X");
-			System.out.println("////////////////////////////////////////////////");
+		emptyTileY+= moves[index][0];														//Set index of move to try
+		emptyTileX+= moves[index][1];
 		
-			isOccupied[locations[tempi][tempj]-1]=true;
-			isOccupied[locations[cloneY][cloneX]-1]=false;
-			
-			temp = locations[cloneY][cloneX];
-			locations[cloneY][cloneX] = locations[tempi][tempj];
-			locations[tempi][tempj] = temp;
-			
-			System.out.println("curr y= "+ y);
-			System.out.println("curr x= "+ x);
-			x= tempj;
-			y= tempi;
-			System.out.println("new y="+y);
-			System.out.println("new x= "+ x);
-			
-			return true;
-		}
+		if((emptyTileY >=0 && emptyTileY < 4) && (emptyTileX>=0 && emptyTileX < 4)) {				
 		
-		else
-			return false;
-	}
-	
-////////////////////////////////////////////////////////////////////////////////////
-	static void printBoard()
-	{
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				System.out.print(locations[i][j] + " ");
+			if( isOccupied[emptyTileY][emptyTileX]== true) {								//Move instance Impossible
+				return false;
 			}
 			
-			System.out.println();
+			else if(isOccupied[emptyTileY][emptyTileX]== false) {							//Found a possible move
+				
+				isOccupied[emptyTileY][emptyTileX]=true;									
+				isOccupied[cloneY][cloneX]=false;
+				
+				temp = locations[cloneY][cloneX];
+				locations[cloneY][cloneX] = locations[emptyTileY][emptyTileX];
+				locations[emptyTileY][emptyTileX] = temp;
+				x= emptyTileX;
+				y= emptyTileY;
+				
+				return true;
+			}
 		}
+		
+		return false;
 	}
 	
+	
 ////////////////////////////////////////////////////////////////////////////////////
-	public int getTileNum(){
+	public int getTileNum() {
 		return number;
 	}
 	
-////////////////////////////////////////////////////////////////////////////////////	
-	public boolean isOccupied(){
-		return isOccupied[number-1];
+////////////////////////////////////////////////////////////////////////////////////
+	public static int[][] getLocations() {
+		return locations;
 	}
+
 }
