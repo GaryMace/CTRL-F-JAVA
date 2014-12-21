@@ -45,7 +45,8 @@ public class SliderPuzzle extends JFrame {
 		Tile isClicked = (Tile) o;
 		int temp = isClicked.getTileNum();
 		
-		isClicked.setLocation(0,0);
+		isClicked.printBoard();
+		//isClicked.move();
 	}
 	
 }
