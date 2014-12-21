@@ -1,15 +1,17 @@
 package SliderPuzzle;
 
 import java.awt.Color;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 public class Tile extends JLabel {
 	
 	private int moves[][] = { {0 , 0}, {0 , +1}, {0 , -1}, {+1 , 0}, {-1 , 0} };
-	private boolean isOccupied[] = new boolean[16];
+	private static boolean isOccupied[] = new boolean[16];
 	private static int locations[][] = new int[4][4];
 	private int x,y,number;
 	
@@ -39,7 +41,7 @@ public class Tile extends JLabel {
 ////////////////////////////////////////////////////////////////////////////////////
 	public void move() {
 		int tempx,tempy;
-		int i;
+		int i,count=0;
 		boolean checker;
 		tempx=x;
 		tempy=y;
@@ -48,26 +50,54 @@ public class Tile extends JLabel {
 			checker =checkMove(tempy , tempx, i);
 			
 			if( checker ==true) {
+				count++;
 				break;
 			}
 		}
 		
-		this.setLocation(20+(tempx+=moves[i][0])*76, 20+(tempy+=moves[i][1])*76);
+		if(count ==1) {
+			this.setLocation(20+(tempx+=moves[i][1])*76, 20+(tempy+=moves[i][0])*76);
+		}
+		
+		else {
+			JOptionPane.showMessageDialog(null,"No move possible");
+		}
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////	
 	private boolean checkMove(int cloneY, int cloneX, int index) {
-		int tempi=cloneY, tempj=cloneX;
+		int tempi=cloneY, tempj=cloneX,temp=0;
 		tempi+= moves[index][0];
 		tempj+= moves[index][1];
-		
-		if(isOccupied[locations[tempi][tempj]-1]==true) {
+		System.out.println("Empty slot Y "+ tempi);
+		System.out.println("Empty slot X "+ tempj);
+		if(((tempi >=0 && tempi < 4) && (tempj>=0 && tempj < 4)) && isOccupied[locations[tempi][tempj]-1]==true ) {				//Move impossible
 			return false;
 		}
 		
-		else if(isOccupied[locations[tempi][tempj]-1]==false) {
+		else if(((tempi >=0 && tempi < 4) && (tempj>=0 && tempj < 4)) && isOccupied[locations[tempi][tempj]-1]==false ) {		//If a move is possible
+			System.out.println("////////////////////////////////////////////////");
+			System.out.println("truth val at clicked index: "+ isOccupied[locations[cloneY][cloneX]-1] );
+			System.out.println("truth val at empty index: "+ isOccupied[locations[tempi][tempj]-1] );
+			System.out.println("////////////////////////////////////////////////");
+			System.out.println("Add "+ moves[index][0]+" to Y");
+			System.out.println("Add "+ moves[index][1]+" to X");
+			System.out.println("////////////////////////////////////////////////");
+		
 			isOccupied[locations[tempi][tempj]-1]=true;
 			isOccupied[locations[cloneY][cloneX]-1]=false;
+			
+			temp = locations[cloneY][cloneX];
+			locations[cloneY][cloneX] = locations[tempi][tempj];
+			locations[tempi][tempj] = temp;
+			
+			System.out.println("curr y= "+ y);
+			System.out.println("curr x= "+ x);
+			x= tempj;
+			y= tempi;
+			System.out.println("new y="+y);
+			System.out.println("new x= "+ x);
+			
 			return true;
 		}
 		
