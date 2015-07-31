@@ -8,6 +8,12 @@ public class Continent {
 	private int controlVal;
 	private ArrayList<Territory> territories;
 	
+	/**
+	 * 
+	 * @param name Name of Continent
+	 * @param territories ArrayList of territories in Continent
+	 * @param controlVal Extra units received for controlling continent
+	 */
 	public Continent(String name, ArrayList<Territory> territories, int controlVal) {
 		this.name =name;
 		this.controlVal = controlVal;

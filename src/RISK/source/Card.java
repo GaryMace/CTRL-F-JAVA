@@ -5,25 +5,23 @@ public class Card {
 	private String territory;
 	private String unit;
 	
-	public void setCard(boolean isWildCard) {
-		this.isWildCard= isWildCard;
-	}
-	
-	public void setTerritory(String territory) {
+	/**
+	 * 
+	 * @param unit	Unit corresponding to card
+	 * @param territory	Territory corresponding to card
+	 * @param isWildCard	Is it a wild card?
+	 */
+	public Card(String unit, String territory, boolean isWildCard) {
+		this.unit=unit;
 		this.territory=territory;
+		this.isWildCard=isWildCard;
 	}
-	
-	public void setUnit(String unit) {
-		this.unit= unit;
-	}
-	
 	public boolean isWildCard() {
 		return isWildCard;
 	}
 	public String getTerritory() {
 		return territory;
 	}
-	
 	public String getUnit() {
 		return unit;
 	}
