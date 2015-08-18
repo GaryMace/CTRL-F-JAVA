@@ -147,5 +147,5 @@ public class Vertex {
         return new ArrayList<Edge>(this.neighborhood);
     }
     
+    
 }
-

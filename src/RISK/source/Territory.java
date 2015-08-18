@@ -8,7 +8,7 @@ public class Territory {
 	private String conqueredBy;
 	private int numUnits;
 	private int boardZone;
-	//private ArrayList<String> borders;
+	private ArrayList<Territory> borders;
 	
 	/**
 	 * 	
@@ -18,7 +18,6 @@ public class Territory {
 	public Territory(String name, int boardZone) {
 		this.name = name;
 		this.boardZone=boardZone;
-		//this.borders = new ArrayList<String>(bordering);
 	}
 	//N.America = 0, S.America = 1, Africa = 2, Asia = 3, Europe = 4, Australia = 5.
 	public int getBoardZone() {
@@ -45,10 +44,14 @@ public class Territory {
 		return name;
 	}
 	
-	/*public ArrayList<String> getBorders(){
+	public ArrayList<Territory> getBorders() {
 		return borders;
-	} */
+	}
 	
+	public void setBorders(ArrayList<Territory> borders) {
+		this.borders = borders;
+	}
+
 	//Re-design
 	
 	/*public boolean isBorder(Territory toCheck) {

@@ -137,4 +137,3 @@ public class Edge implements Comparable<Edge> {
         return e.one.equals(this.one) && e.two.equals(this.two);
     }   
 }
-

@@ -1,6 +1,11 @@
 package graph;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import source.Territory;
 
 /**
  * This class models a simple, undirected graph using an 
@@ -188,5 +193,24 @@ public class Graph {
      */
     public Set<Edge> getEdges(){
         return new HashSet<Edge>(this.edges.values());
-    } 
+    }
+    /**
+     * 
+     * @param getBordersOf Territory to get borders of
+     * @return  borders of queried territory
+     */
+    public ArrayList<Territory> adjacencyList(Vertex getBordersOf) {
+    	if(this.containsVertex(getBordersOf) == false) 
+    		return null;
+    	
+    	else {
+    		ArrayList<Territory> adjacencyList = new ArrayList<Territory>();
+    	
+    		for(Edge e: getBordersOf.getNeighbors() ) {
+    			Vertex temp = e.getNeighbor(getBordersOf);
+    			adjacencyList.add(temp.getTerritory());
+    		}
+    		return adjacencyList;
+    	}
+    }
 }
