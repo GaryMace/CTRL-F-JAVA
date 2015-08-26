@@ -321,12 +321,12 @@ public class Board {
 		continents.add(new Continent(name, temp , contVal));
 	}
 	
-	public boolean checkMove(Vertex attacker, Vertex toAttack, Player player, int numDie) {
+	public boolean checkMove(Vertex attacker, Vertex toAttack, Player player, int numUnits) {
 		ArrayList<Territory> borders = graph.adjacencyList(attacker);
 		String plr = player.getName();
 		Territory territory = attacker.getTerritory();
 		
-		if( territory.getNumUnits() <= numDie) {//Must have at least 1 more unit in territory than number die rolling
+		if( territory.getNumUnits()-numUnits > 2) { //Must have more than 2 units in attacking territory at all times
 			displayError(DIE_ERROR);
 			return false;
 		}
@@ -352,7 +352,10 @@ public class Board {
 		}
 		return true;
 	}
-	
+	/**
+	 * 
+	 * @param errorCode Displays error message based on which error has been triggered
+	 */
 	private void displayError(int errorCode) {
 		switch(errorCode) {
 			case DIE_ERROR:
@@ -375,40 +378,94 @@ public class Board {
 				break;
 		}
 	}
-	
-	private int makeMove(Vertex attacker, Vertex toAttack, Player player, int numDie) {
+	/**
+	 * 
+	 * @param attacker Vertex attacking from
+	 * @param toAttack Vertex being defended
+	 * @param player Player who is attacking
+	 * @param numUnits Number units player wants to invade with
+	 * @return returns whether or not invasion was successful
+	 */
+	public int makeMove(Vertex attacker, Vertex toAttack, Player player, int numUnits) {
 		boolean success =false;
-		Die[] aDie = new Die[numDie];
+		Die[] aDie;
 		Die[] dDie;
 		int commandCode= MOVE_ERROR;
 		int defendingDie=0;
-		int aUnits = attacker.getTerritory().getNumUnits();
+		int aUnits = numUnits;
 		int dUnits = toAttack.getTerritory().getNumUnits();
+		int aControl=0, dControl=0;
 		
-		success =checkMove(attacker, toAttack, player, numDie);
+		success =checkMove(attacker, toAttack, player, numUnits);
 		if(success==false) 
 			return commandCode;
 		
 		else {
-			if(dUnits > 2 ) 
+			if(dUnits >= 2 ) 
 				defendingDie=2;
 			else 
 				defendingDie=1;
 			
 			dDie= new Die[defendingDie];
 			
+			if(numUnits > 3 ) 
+				aDie = new Die[3];
+			else
+				aDie = new Die[2];
+			
 			do {
-				int aMaxDie=0;
-				int dMaxDie=0;
-				for(int i=0; i < aDie.length; i++) {
+				int[] aMaxDie= {0,0};
+				int[] dMaxDie= {0,0};
+				int temp=0;
+				
+				if(aUnits == 3) 	//Controls how many dice can be rolled based on number units attacker has left
+					aControl=1;
+				else if(aUnits <= 2) 
+					aControl=2;
+				
+				if(dUnits < 2)		//Controls how many dice can be rolled based on number units defender has left
+					dControl=1;
+			
+				for(int i=0; i < aDie.length -aControl; i++) {		//Rolls dice and obtains largest values of each roll and puts them in arrays
 					aDie[i] = new Die();
 					aDie[i].rollDie();
-					if(aDie[i].getVal()> aMaxDie)
-						aMaxDie=aDie[i].getVal();
-					
+					if(aDie[i].getVal()> aMaxDie[0]) {
+						temp= aMaxDie[0];
+						aMaxDie[0]=aDie[i].getVal();
+						aMaxDie[1]=temp;
+					}
+				}
+				temp=0;
+				
+				for(int j=0; j < dDie.length -dControl; j++) {
+					dDie[j] = new Die();
+					dDie[j].rollDie();
+					if(dDie[j].getVal() > dMaxDie[0]) {
+						temp= dMaxDie[0];
+						dMaxDie[0]=dDie[j].getVal();
+						dMaxDie[1]=temp;
+					}
 				}
 				
-			}while(aUnits > 2 && dUnits > 0);
+				//Updates units left based on die values
+				if(aMaxDie[0] > dMaxDie[0]) 
+					dUnits--;
+				else
+					aUnits--;
+				
+				if(aMaxDie[1] > dMaxDie[1] && (aMaxDie[1] >0 && dMaxDie[1] >0))		//Did we use a second die?
+					dUnits--;
+				else if(aMaxDie[1] < dMaxDie[1] && (aMaxDie[1] >0 && dMaxDie[1] >0))
+					aUnits--;
+				
+			}while(aUnits > 0  && dUnits > 0);	//Continue this process until either the territory is successfully invaded or the attack fails
+		
+		if(aUnits == 0)
+			commandCode = MOVE_ERROR;
+		
+		else if(dUnits == 0) 
+			commandCode = MOVE_SUCCESS;
+		
 		}
 		
 		return commandCode;
