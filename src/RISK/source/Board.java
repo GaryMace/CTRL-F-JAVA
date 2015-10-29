@@ -33,275 +33,50 @@ public class Board {
 	 * Also assigns each territory(all 42) all it's bordering territories(Lot's of chump code)
 	 */
 	private void setContinents() {
+		int arrayListIndex = 0;
+		int offsetIntoArrayList = 0;
 		
-		//N.America
-		territories.add(0, new Vertex(new Territory("Alaska", 0)));
-		territories.add(1, new Vertex(new Territory("Northwest Territory", 0)) ); 
-		territories.add(2, new Vertex(new Territory("Greenland", 0))); 
-		territories.add(3, new Vertex(new Territory("Alberta", 0)));
-		territories.add(4, new Vertex(new Territory("Ontario", 0)));
-		territories.add(5, new Vertex(new Territory("Quebec", 0))); 
-		territories.add(6, new Vertex(new Territory("Western United States", 0)));
-		territories.add(7, new Vertex(new Territory("Eastern United States", 0)));
-		territories.add(8, new Vertex(new Territory("Central America", 0)));
-		setContinent(territories, 0, 9, "North America", 5);
+		//Three parallel arrays
+		int[] continentSizes =       {9,4,6,11,7,4};
+		int[] continentControlVals = {5,2,3,7, 5,2};
+		String[] continentNames =    {"North America", "South America", "Africa", "Asia", "Europe", "Australia"};
 		
-		//S.America
-		territories.add(9, new Vertex(new Territory("Venezuela", 1)));
-		territories.add(10, new Vertex(new Territory("Peru", 1))); 
-		territories.add(11, new Vertex(new Territory("Brazil", 1)));
-		territories.add(12, new Vertex(new Territory("Argentina", 1)));
-		setContinent(territories, 9, 4, "South America", 2);
+		String[] terrNames = { 
+				"Alaska", "Northwest Territory", "Greenland", "Alberta", "Ontario", "Quebec", "Western United States",
+				"Eastern United States", "Central America", "Venezuela", "Peru", "Brazil", "Argentina", "North Africa",
+				"Egypt", "Congo", "East Africa", "South Africa", "Madagascar", "Middle East", "Afghanistan", "Ural", "India",
+				"China", "Siam", "Mongolia", "Japan", "Irkutsk", "Siberia", "Yakutsk", "Kamchatka", "Great Britain", "Western Europe",
+				"Northern Europe", "Southern Europe", "Ukraine", "Scandinavia", "Iceland", "Western Australia", "Eastern Australia",
+				"Indonesia", "New Guinea"
+		};
 		
-		//Africa
-		territories.add(13, new Vertex(new Territory("North Africa", 2)));
-		territories.add(14, new Vertex(new Territory("Egypt", 2))); 
-		territories.add(15, new Vertex(new Territory("Congo", 2)));
-		territories.add(16, new Vertex(new Territory("East Africa", 2))); 
-		territories.add(17, new Vertex(new Territory("South Africa", 2)));
-		territories.add(18, new Vertex(new Territory("Madagascar", 2)));
-		setContinent(territories, 13, 6, "Africa", 3);
-		
-		//Asia
-		territories.add(19, new Vertex(new Territory("Middle East", 3))); 
-		territories.add(20, new Vertex(new Territory("Afghanistan", 3)));
-		territories.add(21, new Vertex(new Territory("Ural", 3))); 
-		territories.add(22, new Vertex(new Territory("India", 3))); 
-		territories.add(23, new Vertex(new Territory("China", 3)));
-		territories.add(24, new Vertex(new Territory("Siam", 3)));
-		territories.add(25, new Vertex(new Territory("Mongolia", 3)));
-		territories.add(26, new Vertex(new Territory("Japan", 3)));
-		territories.add(27, new Vertex(new Territory("Irkutsk", 3)));
-		territories.add(28, new Vertex(new Territory("Siberia", 3))); 
-		territories.add(29, new Vertex(new Territory("Yakutsk", 3)));
-		territories.add(30, new Vertex(new Territory("Kamchatka", 3)));
-		setContinent(territories, 19, 11, "Asia", 7);
-		
-		//Europe
-		territories.add(31, new Vertex(new Territory("Great Britain", 4)));
-		territories.add(32, new Vertex(new Territory("Western Europe", 4)));
-		territories.add(33, new Vertex(new Territory("Northern Europe", 4)));
-		territories.add(34, new Vertex(new Territory("Southern Europe", 4)));
-		territories.add(35, new Vertex(new Territory("Ukriane", 4)));
-		territories.add(36, new Vertex(new Territory("Scandinavia", 4)));
-		territories.add(37, new Vertex(new Territory("Iceland", 4))); 
-		setContinent(territories, 31, 7, "Europe", 5);
-		
-		//Australia
-		territories.add(38, new Vertex(new Territory("Western Australia", 5)));
-		territories.add(39, new Vertex(new Territory("Eastern Australia", 5)));
-		territories.add(40, new Vertex(new Territory("Indonesia", 5)));
-		territories.add(41, new Vertex(new Territory("New Guinea", 5))); 
-		setContinent(territories, 38, 4, "Australia", 2);
+		for(int i=0; i < 6; i++) {
+			for(int j=0; j < continentSizes[i]; j++) {
+				territories.add(arrayListIndex, new Vertex(new Territory(terrNames[arrayListIndex], i)) );
+				arrayListIndex++;
+			}
+			//Create continent with (a name, num terrs in continent, control value) 
+			setContinent(territories, offsetIntoArrayList, continentSizes[i], continentNames[i], continentControlVals[i]);
+			offsetIntoArrayList += continentSizes[i];
+		}
 		
 		//Add the territories to the graph 
 		graph = new Graph(territories);
 		
-		graph.addEdge(territories.get(0), territories.get(1));	//Alaska
-		graph.addEdge(territories.get(0), territories.get(3));
-		graph.addEdge(territories.get(0), territories.get(30));
-		
-		graph.addEdge(territories.get(1), territories.get(0));	//Northwest Territory
-		graph.addEdge(territories.get(1), territories.get(3));
-		graph.addEdge(territories.get(1), territories.get(4));
-		graph.addEdge(territories.get(1), territories.get(2));
-		
-		graph.addEdge(territories.get(2), territories.get(1)); //Greenland
-		graph.addEdge(territories.get(2), territories.get(4));
-		graph.addEdge(territories.get(2), territories.get(5));
-		graph.addEdge(territories.get(2), territories.get(37));
-		
-		graph.addEdge(territories.get(3), territories.get(0)); //Alberta
-		graph.addEdge(territories.get(3), territories.get(1));
-		graph.addEdge(territories.get(3), territories.get(4));
-		graph.addEdge(territories.get(3), territories.get(6));
-		
-		graph.addEdge(territories.get(4), territories.get(1)); //Ontario
-		graph.addEdge(territories.get(4), territories.get(3));
-		graph.addEdge(territories.get(4), territories.get(6));
-		graph.addEdge(territories.get(4), territories.get(7));
-		graph.addEdge(territories.get(4), territories.get(5));
-		graph.addEdge(territories.get(4), territories.get(2));
-		
-		graph.addEdge(territories.get(5), territories.get(4)); //Quebec
-		graph.addEdge(territories.get(5), territories.get(7));
-		graph.addEdge(territories.get(5), territories.get(2));
-		
-		graph.addEdge(territories.get(6), territories.get(3)); //Western United States
-		graph.addEdge(territories.get(6), territories.get(4));
-		graph.addEdge(territories.get(6), territories.get(7));
-		graph.addEdge(territories.get(6), territories.get(8));
-		
-		graph.addEdge(territories.get(7), territories.get(6)); //Eastern United States
-		graph.addEdge(territories.get(7), territories.get(4));
-		graph.addEdge(territories.get(7), territories.get(5));
-		graph.addEdge(territories.get(7), territories.get(8));
-		
-		graph.addEdge(territories.get(8), territories.get(6)); //Central America
-		graph.addEdge(territories.get(8), territories.get(7));
-		graph.addEdge(territories.get(8), territories.get(9));
-		
-		graph.addEdge(territories.get(9), territories.get(8)); //Venezuela
-		graph.addEdge(territories.get(9), territories.get(10));
-		graph.addEdge(territories.get(9), territories.get(11));
-		
-		graph.addEdge(territories.get(10), territories.get(9)); //Peru
-		graph.addEdge(territories.get(10), territories.get(11));
-		graph.addEdge(territories.get(10), territories.get(12));
-		
-		graph.addEdge(territories.get(11), territories.get(9)); //Brazil
-		graph.addEdge(territories.get(11), territories.get(10));
-		graph.addEdge(territories.get(11), territories.get(12));
-		graph.addEdge(territories.get(11), territories.get(13));
-		
-		graph.addEdge(territories.get(12), territories.get(10)); //Argentina
-		graph.addEdge(territories.get(12), territories.get(11));
-		
-		graph.addEdge(territories.get(13), territories.get(11)); //North Africa
-		graph.addEdge(territories.get(13), territories.get(14));
-		graph.addEdge(territories.get(13), territories.get(16));
-		graph.addEdge(territories.get(13), territories.get(15));
-		graph.addEdge(territories.get(13), territories.get(32));
-		graph.addEdge(territories.get(13), territories.get(34));
-		
-		graph.addEdge(territories.get(14), territories.get(13)); //Egypt
-		graph.addEdge(territories.get(14), territories.get(16)); 
-		graph.addEdge(territories.get(14), territories.get(34)); 
-		graph.addEdge(territories.get(14), territories.get(19)); 
-		
-		graph.addEdge(territories.get(15), territories.get(13)); //Congo
-		graph.addEdge(territories.get(15), territories.get(17)); 
-		graph.addEdge(territories.get(15), territories.get(16)); 
-		
-		graph.addEdge(territories.get(16), territories.get(13)); //East Africa
-		graph.addEdge(territories.get(16), territories.get(14));
-		graph.addEdge(territories.get(16), territories.get(15));
-		graph.addEdge(territories.get(16), territories.get(17));
-		
-		graph.addEdge(territories.get(17), territories.get(15)); //South Africa
-		graph.addEdge(territories.get(17), territories.get(16));
-		graph.addEdge(territories.get(17), territories.get(18));
-		
-		graph.addEdge(territories.get(18), territories.get(16)); //Madagascar
-		graph.addEdge(territories.get(18), territories.get(17));
-		
-		graph.addEdge(territories.get(19), territories.get(14)); //Middle East
-		graph.addEdge(territories.get(19), territories.get(16));
-		graph.addEdge(territories.get(19), territories.get(34));
-		graph.addEdge(territories.get(19), territories.get(35));
-		graph.addEdge(territories.get(19), territories.get(20));
-		graph.addEdge(territories.get(19), territories.get(22));
-		
-		graph.addEdge(territories.get(20), territories.get(19)); //Afganistan
-		graph.addEdge(territories.get(20), territories.get(22));
-		graph.addEdge(territories.get(20), territories.get(21));
-		graph.addEdge(territories.get(20), territories.get(23));
-		graph.addEdge(territories.get(20), territories.get(35));
-		
-		graph.addEdge(territories.get(21), territories.get(35)); //Ural
-		graph.addEdge(territories.get(21), territories.get(20));
-		graph.addEdge(territories.get(21), territories.get(28));
-		graph.addEdge(territories.get(21), territories.get(23));
-		
-		graph.addEdge(territories.get(22), territories.get(23)); //India
-		graph.addEdge(territories.get(22), territories.get(19));
-		graph.addEdge(territories.get(22), territories.get(20));
-		graph.addEdge(territories.get(22), territories.get(24));
-		
-		graph.addEdge(territories.get(23), territories.get(22)); //China
-		graph.addEdge(territories.get(23), territories.get(20));
-		graph.addEdge(territories.get(23), territories.get(24));
-		graph.addEdge(territories.get(23), territories.get(21));
-		graph.addEdge(territories.get(23), territories.get(28));
-		graph.addEdge(territories.get(23), territories.get(25));
-		
-		graph.addEdge(territories.get(24), territories.get(22)); //Siam
-		graph.addEdge(territories.get(24), territories.get(23));
-		graph.addEdge(territories.get(24), territories.get(40));
-		
-		graph.addEdge(territories.get(25), territories.get(23)); //Mongolia
-		graph.addEdge(territories.get(25), territories.get(28));
-		graph.addEdge(territories.get(25), territories.get(27));
-		graph.addEdge(territories.get(25), territories.get(30));
-		graph.addEdge(territories.get(25), territories.get(26));
-		
-		graph.addEdge(territories.get(26), territories.get(25)); //Japan
-		graph.addEdge(territories.get(26), territories.get(30));
-		
-		graph.addEdge(territories.get(27), territories.get(28)); //Irkutsk
-		graph.addEdge(territories.get(27), territories.get(25));
-		graph.addEdge(territories.get(27), territories.get(29));
-		graph.addEdge(territories.get(27), territories.get(30));
-		
-		graph.addEdge(territories.get(28), territories.get(21)); //Siberia
-		graph.addEdge(territories.get(28), territories.get(23));
-		graph.addEdge(territories.get(28), territories.get(29));
-		graph.addEdge(territories.get(28), territories.get(27));
-		graph.addEdge(territories.get(28), territories.get(25));
-		
-		graph.addEdge(territories.get(29), territories.get(30)); //Yakutsk
-		graph.addEdge(territories.get(29), territories.get(28));
-		graph.addEdge(territories.get(29), territories.get(27));
-		
-		graph.addEdge(territories.get(30), territories.get(29)); //Kamchatka
-		graph.addEdge(territories.get(30), territories.get(27));
-		graph.addEdge(territories.get(30), territories.get(25));
-		graph.addEdge(territories.get(30), territories.get(26));
-		graph.addEdge(territories.get(30), territories.get(0));
-		
-		graph.addEdge(territories.get(31), territories.get(37)); //Great Britain
-		graph.addEdge(territories.get(31), territories.get(32));
-		graph.addEdge(territories.get(31), territories.get(36));
-		graph.addEdge(territories.get(31), territories.get(33));
-		
-		graph.addEdge(territories.get(32), territories.get(31)); //Western Europe
-		graph.addEdge(territories.get(32), territories.get(33));
-		graph.addEdge(territories.get(32), territories.get(34));
-		graph.addEdge(territories.get(32), territories.get(13));
-		
-		graph.addEdge(territories.get(33), territories.get(31)); //Northern Europe
-		graph.addEdge(territories.get(33), territories.get(32));
-		graph.addEdge(territories.get(33), territories.get(34));
-		graph.addEdge(territories.get(33), territories.get(35));
-		graph.addEdge(territories.get(33), territories.get(36));
-		
-		graph.addEdge(territories.get(34), territories.get(33)); //Southern Europe
-		graph.addEdge(territories.get(34), territories.get(32));
-		graph.addEdge(territories.get(34), territories.get(35));
-		graph.addEdge(territories.get(34), territories.get(19));
-		graph.addEdge(territories.get(34), territories.get(13));
-		graph.addEdge(territories.get(34), territories.get(14));
-		
-		graph.addEdge(territories.get(35), territories.get(36)); //Ukraine
-		graph.addEdge(territories.get(35), territories.get(33));
-		graph.addEdge(territories.get(35), territories.get(34));
-		graph.addEdge(territories.get(35), territories.get(20));
-		graph.addEdge(territories.get(35), territories.get(21));
-		graph.addEdge(territories.get(35), territories.get(19));
-		
-		graph.addEdge(territories.get(36), territories.get(37)); //Scandinavia
-		graph.addEdge(territories.get(36), territories.get(31));
-		graph.addEdge(territories.get(36), territories.get(33));
-		graph.addEdge(territories.get(36), territories.get(35));
-		
-		graph.addEdge(territories.get(37), territories.get(31)); //Iceland
-		graph.addEdge(territories.get(37), territories.get(36));
-		graph.addEdge(territories.get(37), territories.get(2));
-		
-		graph.addEdge(territories.get(38), territories.get(39)); //Western Australia
-		graph.addEdge(territories.get(38), territories.get(40));
-		graph.addEdge(territories.get(38), territories.get(41));
-		
-		graph.addEdge(territories.get(39), territories.get(41)); //East Australia
-		graph.addEdge(territories.get(39), territories.get(38));
-		
-		graph.addEdge(territories.get(40), territories.get(24)); //Indonesia
-		graph.addEdge(territories.get(40), territories.get(41));
-		graph.addEdge(territories.get(40), territories.get(38));
-		
-		graph.addEdge(territories.get(41), territories.get(40)); //New Guinea
-		graph.addEdge(territories.get(41), territories.get(38));
-		graph.addEdge(territories.get(41), territories.get(39));
+		//2-D array storing territories adjacent to territory at index i
+		int[][] edges = { 
+				{1,3,30}, {0,3,4,2}, {1,4,5,37}, {0,1,4,6}, {1,3,6,7,5,2}, {4,7,2}, {3,4,7,8}, {6,4,5,8}, {6,7,9}, 
+				{8,10,11}, {9,11,12}, {9,10,12,13}, {10,11}, {11,14,16,15,32,34}, {13,16,34,19}, {13,17,16}, {13,14,15,17}, 
+				{15,16,18}, {16,17}, {14,16,34,35,20,22}, {19,22,21,23,35}, {35,20,28,23}, {23,19,20,24}, {22,20,24,21,28,25},
+				{22,23,40}, {23,28,27,30,26}, {25,30}, {28,25,29,30}, {21,23,29,27,25}, {30,28,27}, {29,27,25,26,0}, {37,32,36,33}, 
+				{31,33,34,13}, {31,32,34,35,36}, {33,32,35,19,13,14}, {36,33,34,20,21,19}, {37,31,33,35}, {31,36,2}, {39,40,41}, 
+				{41,38}, {24,41,38}, {40,38,39}
+		};
+		for(int i=0; i < edges.length; i++) {
+			for(int j=0; j < edges[i].length; j++){
+				graph.addEdge(territories.get(i), territories.get(edges[i][j]));
+			}
+		}
 	}
 	
 	/**

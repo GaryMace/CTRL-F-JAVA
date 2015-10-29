@@ -19,7 +19,6 @@ public class GUI extends JFrame{	//This class handles displays, prompts, inputs 
 	JSpinner spinner;
 	ImageIcon[] pics;
 	myMouseListener mouseListener;
-	
 	public GUI(Risk game){
 		super("Risk - The Global Conquest Game");
 		
@@ -77,21 +76,8 @@ public class GUI extends JFrame{	//This class handles displays, prompts, inputs 
 		exitButton.setSize(75, 20);
 		exitButton.addMouseListener(mouseListener);
 		backGround.add(exitButton);
-						//TODO: territories as buttons
-		regButtons[0] = new JLabel();
-		regButtons[0].setLocation(599,174);
-		regButtons[0].setBorder(BorderFactory.createEmptyBorder());
-		regButtons[0].setIcon(pics[2]);
-		regButtons[0].addMouseListener(mouseListener);
-		backGround.add(regButtons[0]);
-		
-		regButtons[1] = new JLabel();
-		regButtons[1].setSize(125,125);
-		regButtons[1].setLocation(-4,49);
-		regButtons[1].setBorder(BorderFactory.createEmptyBorder());
-		regButtons[1].setIcon(pics[3]);
-		regButtons[1].addMouseListener(mouseListener);
-		backGround.add(regButtons[1]);
+						
+		//TODO: territories as buttons
 		
 		setSize(1200, 700);
 		this.setResizable(false); 
@@ -100,7 +86,7 @@ public class GUI extends JFrame{	//This class handles displays, prompts, inputs 
 		add(backGround);
 		setVisible(true);
 	}
-	
+
 	public JLabel[] getButtons() {
 		return regButtons;
 	}
