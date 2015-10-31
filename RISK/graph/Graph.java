@@ -7,7 +7,10 @@ import java.util.Set;
 
 import source.Territory;
 
-/**
+/**This graph code is not mine. I simple used this source code to model a simple graph.
+ * All credit for the Graph implementation goes to Micheal Levet. I however did create all other code
+ * in the source folder
+ *
  * This class models a simple, undirected graph using an 
  * incidence list representation. Vertices are identified 
  * uniquely by their labels, and only unique vertices are allowed.

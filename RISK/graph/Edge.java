@@ -1,6 +1,9 @@
 package graph;
 
-/**
+/**This graph code is not mine. I simple used this source code to model a simple graph.
+ * All credit for the Graph implementation goes to Micheal Levet. I however did create all other code
+ * in the source folder
+ * 
  * This class models an undirected Edge in the Graph implementation.
  * An Edge contains two vertices and a weight. If no weight is
  * specified, the default is a weight of 1. This is so traversing

@@ -4,7 +4,10 @@ import java.util.ArrayList;
 
 import source.Territory;
 
-/**
+/**This graph code is not mine. I simple used this source code to model a simple graph.
+ * All credit for the Graph implementation goes to Micheal Levet. I however did create all other code
+ * in the source folder
+ * 
  * This class models a vertex in a graph. For ease of 
  * the reader, a label for this vertex is required. 
  * Note that the Graph object only accepts one Vertex per label,
