@@ -25,8 +25,8 @@ public class GMap<K, V> {
 	}
 	
 	public void put(K key, V value) {
-		if(map[getHash(key)] != null) {
-			int keyIndex = find(key);
+        if(map[getHash(key)] != null) {
+            int keyIndex = find(key);
 			if(keyIndex != -1) {
 				map[keyIndex] = new GEntry<K, V>(key, value);
 			}
@@ -125,6 +125,8 @@ public class GMap<K, V> {
 			this.value = value;
 		}
 
-        public String toString() { return "{"+key.toString()+", "+ value.toString()+"}"; }
+        public String toString() {
+            return "{"+key.toString()+", "+ value.toString()+"}";
+        }
 	}
 }
