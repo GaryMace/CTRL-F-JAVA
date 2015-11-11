@@ -6,13 +6,13 @@ public class Test {
 		myMap.put("a", 1);
 		myMap.put("b", 2);
 		myMap.put("c", 3);
-		myMap.put("d", 4);
+		//myMap.put("d", 4);
 		myMap.put("e", 5);
-		
-		System.out.println(myMap.get("a"));
-		System.out.println(myMap.get("b"));
-		System.out.println(myMap.get("c"));
-		System.out.println(myMap.get("d"));
-		System.out.println(myMap.get("e"));
+		System.out.print(myMap.toString());
+		//System.out.println(myMap.get("a"));
+		//System.out.println(myMap.get("b"));
+		//System.out.println(myMap.get("c"));
+		//System.out.println(myMap.get("d"));
+		//System.out.println(myMap.get("e"));
 	}
 }

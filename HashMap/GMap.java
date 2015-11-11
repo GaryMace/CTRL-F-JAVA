@@ -1,19 +1,19 @@
 
 public class GMap<K, V> {
-	public static final int HASH_MAP_SIZE = 100;
+	public static final int HASH_MAP_SIZE = 5;
 	GEntry<K, V>[] map;
 	
 	public GMap(){
-		map =  new GEntry[HASH_MAP_SIZE];
+        map =  new GEntry[HASH_MAP_SIZE];
 	}
 	
 	public int size() {
-		int hashSize = 0;
+		int mapSize = 0;
 		for(GEntry<K, V> entry : map) {
 			if(entry != null)
-				hashSize++;
+				mapSize++;
 		}
-		return hashSize;
+		return mapSize;
 	}
 	
 	public boolean isEmpty() {
@@ -21,7 +21,7 @@ public class GMap<K, V> {
 	}
 	
 	public V get(K key) {
-		return map[getHash(key)].getValue();
+        return map[getHash(key)].getValue();
 	}
 	
 	public void put(K key, V value) {
@@ -30,6 +30,9 @@ public class GMap<K, V> {
 			if(keyIndex != -1) {
 				map[keyIndex] = new GEntry<K, V>(key, value);
 			}
+            else {
+                //TODO: Exception handeling for invalid input? Or implement dynamic hash map size increasing
+            }
 		}
 		else {
 			map[getHash(key)] = new GEntry<K, V>(key, value);
@@ -69,24 +72,33 @@ public class GMap<K, V> {
 	 * @return Index of next free position in HashMap. Return -1 if none exists.
 	 */
 	private int find(K key) {
-		int mapIndex = 0;
+		int searchIndex = 0;
 		int keyIndex = getHash(key);
 		
 		for(int numSearches = 1; numSearches < HASH_MAP_SIZE; numSearches++) {
-			mapIndex = keyIndex + numSearches;   //TODO handle overlap here using modulus,,, then you dont need to consider going out of bounds
-			
-			if(mapIndex < HASH_MAP_SIZE) {
-				if(map[mapIndex] == null)
-					return mapIndex;
-				else 
-					continue;
-			}
-			else {
-				keyIndex = 1 - numSearches; //TODO i'm not sure what this does, but will be redundant if you handle overlap above :)
-			}
+			searchIndex = (keyIndex + numSearches) % HASH_MAP_SIZE;
+            if(map[searchIndex] == null) {
+                return searchIndex;
+            }
+            else {
+                continue;
+            }
 		}
 		return -1;
 	}
+
+    public String toString() {
+        String output = "";
+        for(GEntry<K, V> element: map) {
+            if(element == null) {
+                output += "null";
+            }
+            else {
+                output += element.toString();
+            }
+        }
+        return "{ " + output + " }";
+    }
 	
 	public class GEntry<K, V> {
 		K key;
@@ -112,5 +124,7 @@ public class GMap<K, V> {
 		public void setValue(V value) {
 			this.value = value;
 		}
+
+        public String toString() { return "{"+key.toString()+", "+ value.toString()+"}"; }
 	}
 }
