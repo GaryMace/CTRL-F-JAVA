@@ -2,7 +2,6 @@
 public class GMap<K, V> {
 	public static final int HASH_MAP_SIZE = 5;
 	GEntry<K, V>[] map;
-	
 	public GMap(){
         map =  new GEntry[HASH_MAP_SIZE];
 	}
@@ -25,7 +24,10 @@ public class GMap<K, V> {
 	}
 	
 	public void put(K key, V value) {
-        if(map[getHash(key)] != null) {
+        if(containsKey(key)) {
+            remove(key);
+        }
+        if(map[getHash(key)] != null && !containsKey(key)) {
             int keyIndex = find(key);
 			if(keyIndex != -1) {
 				map[keyIndex] = new GEntry<K, V>(key, value);
@@ -72,7 +74,7 @@ public class GMap<K, V> {
 	 * @return Index of next free position in HashMap. Return -1 if none exists.
 	 */
 	private int find(K key) {
-		int searchIndex = 0;
+        int searchIndex = 0;
 		int keyIndex = getHash(key);
 		
 		for(int numSearches = 1; numSearches < HASH_MAP_SIZE; numSearches++) {
@@ -87,11 +89,25 @@ public class GMap<K, V> {
 		return -1;
 	}
 
+	private boolean containsKey(K key) {
+        for(GEntry<K, V> entry: map) {
+            if(!(entry == null)) {
+                if(entry.getKey().equals(key)) {
+                    return true;
+                }
+            }
+            else {
+                continue;
+            }
+        }
+        return false;
+	}
+
     public String toString() {
         String output = "";
         for(GEntry<K, V> element: map) {
             if(element == null) {
-                output += "null";
+                output += "{null}";
             }
             else {
                 output += element.toString();

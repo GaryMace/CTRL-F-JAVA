@@ -8,6 +8,7 @@ public class Test {
 		myMap.put("c", 3);
 		//myMap.put("d", 4);
 		myMap.put("e", 5);
+		myMap.put("a", 25);
 		System.out.print(myMap.toString());
 		//System.out.println(myMap.get("a"));
 		//System.out.println(myMap.get("b"));
