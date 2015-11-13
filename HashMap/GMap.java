@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.Iterator;
 
 public class GMap<K, V> {
 	public static final int HASH_MAP_SIZE = 5;
@@ -27,18 +29,8 @@ public class GMap<K, V> {
         if(containsKey(key)) {
             remove(key);
         }
-        if(map[getHash(key)] != null && !containsKey(key)) {
-            int keyIndex = find(key);
-			if(keyIndex != -1) {
-				map[keyIndex] = new GEntry<K, V>(key, value);
-			}
-            else {
-                //TODO: Exception handeling for invalid input? Or implement dynamic hash map size increasing
-            }
-		}
-		else {
-			map[getHash(key)] = new GEntry<K, V>(key, value);
-		}
+        //TODO: Handle too big
+        map[find(key)] = new GEntry<K, V>(key, value);
 	}
 	
 	public V remove(K key) {
@@ -53,7 +45,49 @@ public class GMap<K, V> {
 			map[counter] = null;
 		}
 	}
-	
+
+	public Iterator<GEntry<K, V>> entries() {
+
+        return new Iterator<GEntry<K, V>>(){
+            private int index = 0;
+
+
+            @Override
+            public boolean hasNext() {
+                return index<HASH_MAP_SIZE;
+            }
+
+            @Override
+            public GEntry<K, V> next() {
+                while(map[index] == null) {
+                    index++;
+                }
+                return map[index++];
+            }
+        };
+    }
+
+    public Iterator<K> keys() {
+
+        return new Iterator<K>(){
+            private int index = 0;
+
+
+            @Override
+            public boolean hasNext() {
+                return index<HASH_MAP_SIZE;
+            }
+
+            @Override
+            public K next() {
+                while(map[index] == null) {
+                    index++;
+                }
+                return map[index++].getKey();
+            }
+        };
+    }
+
 	/**
 	 * 
 	 * @param key Key to get hash code of for HashMap.
@@ -77,13 +111,10 @@ public class GMap<K, V> {
         int searchIndex = 0;
 		int keyIndex = getHash(key);
 		
-		for(int numSearches = 1; numSearches < HASH_MAP_SIZE; numSearches++) {
+		for(int numSearches = 0; numSearches < HASH_MAP_SIZE; numSearches++) {
 			searchIndex = (keyIndex + numSearches) % HASH_MAP_SIZE;
             if(map[searchIndex] == null) {
                 return searchIndex;
-            }
-            else {
-                continue;
             }
 		}
 		return -1;
@@ -96,24 +127,12 @@ public class GMap<K, V> {
                     return true;
                 }
             }
-            else {
-                continue;
-            }
         }
         return false;
 	}
 
     public String toString() {
-        String output = "";
-        for(GEntry<K, V> element: map) {
-            if(element == null) {
-                output += "{null}";
-            }
-            else {
-                output += element.toString();
-            }
-        }
-        return "{ " + output + " }";
+        return Arrays.toString(map);
     }
 	
 	public class GEntry<K, V> {
@@ -141,8 +160,12 @@ public class GMap<K, V> {
 			this.value = value;
 		}
 
+        @Override
         public String toString() {
-            return "{"+key.toString()+", "+ value.toString()+"}";
+            return "GEntry{" +
+                    "key=" + key +
+                    ", value=" + value +
+                    '}';
         }
-	}
+    }
 }
