@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Gary on 24-Nov-15.
@@ -14,7 +15,7 @@ public class GPSMaster {
     private ArrayList<GlobalPosition> positions;
     private ArrayList<Double> KMSplits;
     private ArrayList<Double> MileSplits;
-
+    private HashMap<Integer, Split> splits;
     private double overallDistance;
     private double overallTime;
     private double averageSpeed;
@@ -22,14 +23,14 @@ public class GPSMaster {
     private double avgMilePace;
 
     public GPSMaster() {
+        splits = new HashMap<>();
         positions = new ArrayList<>();
         KMSplits = new ArrayList<>();
         MileSplits = new ArrayList<>();
 
         //readData("./inputFiles/1 Mile Sprint.gpx");
         readData("./inputFiles/16Km Dunshaughlin.gpx");
-        totalDistance();
-        totalTime();
+        totalDistanceAndTimes();
         averageSpeed();
         averageKMPace();
         averageMilePace();
@@ -97,22 +98,47 @@ public class GPSMaster {
         return null;
     }
 
-    private void totalDistance() {
-        double runningCalc = 0;
-
-        for(int i=0; i < positions.size()-1; i++) {
-            runningCalc += haversine(positions.get(i).getLatitude(), positions.get(i+1).getLatitude(), positions.get(i).getLongitude(), positions.get(i+1).getLongitude());
-        }
-
-        overallDistance = runningCalc;
-    }
-
-    private void totalTime(){
+    //TODO: get splits for Mile's/Km's here
+    private void totalDistanceAndTimes() {
+        double runningDistance = 0;
         double runningTime = 0;
+        double runningSplitTimeKm = 0;
+        double runningSplitDistanceKm = 0;
+        double runningSplitTimeMile = 0;
+        double runningSplitDistanceMile = 0;
+        double distanceTemp = 0;
+        double timeTemp = 0;
+        int splitIndex = 1;
 
+        //We're going to be resetting the split after each km/mile so we add the split distance to overall distance, not the other way round
         for(int i=0; i < positions.size()-1; i++) {
-            runningTime += timeBetweenTwoPositions(positions.get(i), positions.get(i+1));
+            distanceTemp = haversine(positions.get(i).getLatitude(), positions.get(i+1).getLatitude(), positions.get(i).getLongitude(), positions.get(i+1).getLongitude());
+            runningSplitDistanceKm += distanceTemp;
+            runningSplitDistanceMile += distanceTemp;
+            runningDistance += distanceTemp;
+
+            timeTemp = timeBetweenTwoPositions(positions.get(i), positions.get(i+1));
+            runningSplitTimeKm += timeTemp;
+            runningSplitTimeMile += timeTemp;
+            runningTime += timeTemp;
+
+            if(runningDistance > 1000) {
+                double realSplitTime = runningSplitTimeKm - adjustTimeTakenOverDistance(1000 - runningSplitDistanceKm);
+                splits.put(splitIndex, new Split(realSplitTime, 1000));
+                runningSplitTimeKm = 0;
+                runningSplitDistanceKm = 0;
+                splitIndex++;
+            }
+            else if(runningDistance > 1609.34) {
+                double realSplitTime = runningSplitTimeMile -adjustTimeTakenOverDistance(1609.34 - runningSplitDistanceMile);
+                splits.put(splitIndex, new Split(realSplitTime, 1609.34));
+                runningSplitTimeMile = 0;
+                runningSplitDistanceMile = 0;
+                splitIndex++;
+            }
         }
+
+        overallDistance = runningDistance;
         overallTime = runningTime;
     }
 
@@ -168,14 +194,14 @@ public class GPSMaster {
             splitTime += timeBetweenTwoPositions(positions.get(i), positions.get(i+1));
 
             if(distanceUndertaken > distance) {
-                splitTime -= adjustTimeTakenOverDistance(distanceUndertaken-distance);
+                splitTime -= adjustTimeTakenOverDistance(distanceUndertaken - distance);
                 timeTaken.add(splitTime);
                 distanceUndertaken = 0;
                 splitTime = 0;
             }
         }
         //TODO: get average pace for distance left over::DONE
-        timeTaken.add(splitTime+getProjectedTimeForUnfinishedSplit(distanceUndertaken, distance));
+        timeTaken.add(splitTime + getProjectedTimeForUnfinishedSplit(distanceUndertaken, distance));
         return timeTaken;
     }
 
@@ -192,19 +218,6 @@ public class GPSMaster {
     private double adjustTimeTakenOverDistance(double extraDistanceTraveled) {
         return extraDistanceTraveled/(((averageSpeed/60)/60)*1000);
     }
-
-    public double getOverallDistance() {
-        return overallDistance;
-    }
-
-    public double getOverallTime() {
-        return overallTime;
-    }
-
-    public double getAverageSpeed() {
-        return averageSpeed;
-    }
-
     public String getAveragePaceIn(String distance) {
         double decimalToSecs;
         String split ="";
@@ -232,6 +245,18 @@ public class GPSMaster {
         time *= 60;
 
         return mins+":"+(int)time+" m/"+splitType;
+    }
+
+    public double getOverallDistance() {
+        return overallDistance;
+    }
+
+    public double getOverallTime() {
+        return overallTime;
+    }
+
+    public double getAverageSpeed() {
+        return averageSpeed;
     }
 
     public static void main(String[] args) {
