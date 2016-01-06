@@ -35,7 +35,7 @@ public class GPSMaster {
         averageSpeed();
         averageKMPace();
         averageMilePace();
-        printKMSplits();
+        printSplits();
     }
 
     private void readData(String fileName) {
@@ -128,22 +128,23 @@ public class GPSMaster {
             runningTime += timeTemp;
 
             if(runningSplitDistanceKm > 1000) {
-                System.out.println(runningSplitTimeKm);
                 double realSplitTime = runningSplitTimeKm - adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, runningSplitTimeKm, 1000);
-                splits.put(splitIndex, new Split(realSplitTime, 1000));
-                runningSplitTimeKm = 0.0;
-                runningSplitDistanceKm = 0.0;
+                splits.put(splitIndex, new Split(realSplitTime, 1000, false));
+                runningSplitTimeKm = adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, runningSplitTimeKm, 1000);
+                runningSplitDistanceKm = runningSplitDistanceKm-1000;
                 splitIndex++;
             }
             else if(runningSplitDistanceMile > 1609.34) {
                 double realSplitTime = runningSplitTimeMile - adjustTimeTakenOverDistance(runningSplitDistanceMile - 1609.34, runningSplitTimeMile, 1609.34);
-                splits.put(splitIndex, new Split(realSplitTime, 1609.34));
+                splits.put(splitIndex, new Split(realSplitTime, 1609.34, false));
                 runningSplitTimeMile = 0.0;
                 runningSplitDistanceMile = 0.0;
                 splitIndex++;
             }
         }
-
+        
+        splits.put(splitIndex++, new Split(runningSplitTimeKm + getProjectedTimeForUnfinishedSplit(runningSplitDistanceKm, 1000, runningSplitTimeKm), 1000, true));
+        splits.put(splitIndex++, new Split(runningSplitTimeMile + getProjectedTimeForUnfinishedSplit(runningSplitDistanceMile, 1609.34, runningSplitTimeMile), 1609.34, true));
         overallDistance = runningDistance;
         overallTime = runningTime;
     }
@@ -216,6 +217,20 @@ public class GPSMaster {
     }
 
     /**
+     *AverageDistance hasn't been calculated at an early point in the program when it's required so we'll dynamically
+     *get the current average speed for whatever distance we've traveled into this Km.
+     *
+     * @param distanceSoFar distance travelled
+     * @param wantedDistance target split distance
+     * @param timeSoFar time for split thusfar
+     * @return Est. time for split
+     */
+    private double getProjectedTimeForUnfinishedSplit(double distanceSoFar, double wantedDistance, double timeSoFar) {
+        double avgSpeed = (distanceSoFar/1000)/(timeSoFar/60/60);
+        return (wantedDistance-distanceSoFar)/(((avgSpeed/60)/60)*1000);
+    }
+
+    /**
      * Not fully possible to get time taken over exactly 1km or 1mile with data so this method gets the extra distance traveled
      * over the required distance and works how far you've traveled based on average speed
      * @param extraDistanceTraveled Extra distance traveled over split
@@ -225,6 +240,7 @@ public class GPSMaster {
         double avgSpeed = distance/time;
         return extraDistanceTraveled/(((avgSpeed/60)/60)*1000);
     }
+
     public String getAveragePaceIn(String distance) {
         double decimalToSecs;
         String split ="";
@@ -254,19 +270,35 @@ public class GPSMaster {
         return mins+":"+(int)time+" m/"+splitType;
     }
 
-    private void printKMSplits() {
+    private void printSplits() {
+        String KmSplits = "";
+        String MileSplits = "";
         Iterator it = splits.entrySet().iterator();
-        int splitIndex=1;
+        int splitKmIndex = 1;
+        int splitMileIndex = 1;
 
-        System.out.println("------------------------------------------------------------");
-        System.out.println("-- Split  |  Avg.Speed(m/s)  |  Pace(m/Km)  |  Elevation  --");
-        System.out.println("------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("-- Split  |  Avg.Speed(km/h)  |  Pace(m/Km)  |  Elevation  --");
+        System.out.println("-------------------------------------------------------------");
         while(it.hasNext()) {
             HashMap.Entry<Integer, Split> entry = (HashMap.Entry<Integer, Split>)it.next();
-            System.out.println("--  "+((splitIndex < 10) ? ("0" + splitIndex) : splitIndex)+"  |  "+(entry.getValue()).toString());
-            splitIndex++;
+            if(entry.getValue().getSplit() == 1000) {
+                KmSplits += ("--  " + ((splitKmIndex < 10) ? ("0" + splitKmIndex) : splitKmIndex) + (entry.getValue()).toString())+ "\n";
+                splitKmIndex++;
+            }
+            else if(entry.getValue().getSplit() == 1609.34) {
+                MileSplits += ("--  " + ((splitMileIndex < 10) ? ("0" + splitMileIndex) : splitMileIndex) + (entry.getValue()).toString())+"\n";
+                splitMileIndex++;
+            }
+
         }
+        System.out.println(KmSplits+"\n\n");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("-- Split  |  Avg.Speed(km/h)  |  Pace(m/M)  |  Elevation  --");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println(MileSplits);
     }
+
 
     public double getOverallDistance() {
         return overallDistance;

@@ -4,16 +4,19 @@
 public class Split {
     private double split;
     private double time;
+    private boolean isProjectedSplit;
 
-    public Split(double time, double split) {
+    public Split(double time, double split, boolean isProjectedSplit) {
         this.time = time;
         this.split = split;
+        this.isProjectedSplit = isProjectedSplit;
     }
 
     private String getSpeed() {
-        return String.format("%.2f", (split/1000)/(time/60/60));
+        double speed = (split/1000)/(time/60/60);
+        return String.format("%.2f", speed);
     }
-    
+
     private String getPace() {
         String str ="";
         double secsToMins = time/60;
@@ -37,8 +40,16 @@ public class Split {
         return split;
     }
 
+    public boolean isProjectedSplit() { return isProjectedSplit; }
+
     //TODO: get elevation
     public String toString() {
-        return getSpeed()+"  |  "+getPace()+"  |  ";
+        String format = "%4s|%4s%8s%7s|%1s%8s%5s|%2s";
+        if(isProjectedSplit) {
+            return String.format(format, " ", " ", "(P)"+getSpeed(), " "," ", "(P)"+getPace(), " ", " ");
+        }
+        else {
+            return String.format(format, " ", " ",""+getSpeed(), " "," ", ""+getPace()," ", " ");
+        }
     }
 }
