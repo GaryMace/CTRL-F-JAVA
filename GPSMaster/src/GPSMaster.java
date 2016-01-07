@@ -1,9 +1,6 @@
-import jdk.nashorn.internal.objects.Global;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -13,9 +10,7 @@ import java.util.Iterator;
 public class GPSMaster {
     public static final double D2R = (3.141592653589793238/180);
     public static final int E_RADIUS = 6367137;
-    private ArrayList<GlobalPosition> positions;
-    private ArrayList<Double> KMSplits;
-    private ArrayList<Double> MileSplits;
+    private HashMap<Integer,GlobalPosition> positions;
     private HashMap<Integer, Split> splits;
     private double overallDistance;
     private double overallTime;
@@ -25,9 +20,7 @@ public class GPSMaster {
 
     public GPSMaster() {
         splits = new HashMap<>();
-        positions = new ArrayList<>();
-        KMSplits = new ArrayList<>();
-        MileSplits = new ArrayList<>();
+        positions = new HashMap<>();
 
         //readData("./inputFiles/1 Mile Sprint.gpx");
         readData("./inputFiles/16Km Dunshaughlin.gpx");
@@ -39,6 +32,7 @@ public class GPSMaster {
     }
 
     private void readData(String fileName) {
+        int hashMapIndex = 0;
         BufferedReader fileReader;
         double currLat = 0;
         double currLon = 0;
@@ -69,14 +63,23 @@ public class GPSMaster {
                     line = fileReader.readLine().replaceAll("\\s", "");
                 }
                 line = fileReader.readLine().replaceAll("\\s", "");
-                positions.add(new GlobalPosition(currLat, currLon, currElev, currTime));
+                positions.put(hashMapIndex++, new GlobalPosition(currLat, currLon, currElev, currTime));
             }
 
         } catch(IOException e ) {
             e.printStackTrace();
+            System.exit(0);
         }
     }
 
+    /**This method takes in two global positions as input and calculates the distance between them in meters.
+     *
+     * @param lat1  Latitude of Position 1
+     * @param lat2  Latitude of Position 2
+     * @param lon1  Longitude of Position 1
+     * @param lon2  Longitude of Positon 2
+     * @return  Distance between two global positions
+     */
     private double haversine(double lat1, double lat2, double lon1, double lon2) {
         double distanceLat = (lat1 - lat2) * D2R;
         double distanceLon = (lon2 - lon1) * D2R;
@@ -86,6 +89,7 @@ public class GPSMaster {
     }
 
     //Grabs double value associated with lat/lon
+    //TODO: Change to regular expressions to avoid potential ArrayOutOfBoundsExceptions
     private double readDoubleAfterString(String line, String token) {
         if(line.contains(token)) {
             return Double.parseDouble(line.split(token)[1].split("\"")[1]);
@@ -93,6 +97,7 @@ public class GPSMaster {
         return -1;
     }
 
+    //TODO: Change to regular expressions to avoid potential ArrayOutOfBoundsExceptions
     private String readStringAfterToken(String line, String token) {
         if(line.contains(token)) {
             return line.split(token)[1].split("<")[0];
@@ -100,7 +105,12 @@ public class GPSMaster {
         return null;
     }
 
-    //TODO: get splits for Mile's/Km's here
+    //TODO: get splits for Mile's/Km's here :: DONE
+
+    /**Method responsible for getting the splits over 1Km, 1 Mile, the elevations of each split. Stores this data in a Split object.
+     *
+     *
+     */
     private void totalDistanceAndTimes() {
         double runningDistance = 0;
         double runningTime = 0;
@@ -108,15 +118,13 @@ public class GPSMaster {
         double runningSplitDistanceKm = 0;
         double runningSplitTimeMile = 0;
         double runningSplitDistanceMile = 0;
-        double distanceTemp = 0;
-        double timeTemp = 0;
+        double distanceTemp;
+        double timeTemp;
         double runningElevKm = 0;
         double runningElevMile = 0;
-        double currElevChange = 0;
-        double overallElev = 0;
+        double currElevChange;
         int splitIndex = 1;
 
-        //We're going to be resetting the split after each km/mile so we add the split distance to overall distance, not the other way round
         for(int i=0; i < positions.size()-1; i++) {
             if ((i + 1) == positions.size() - 1) {
                 break;
@@ -132,7 +140,6 @@ public class GPSMaster {
             runningTime += timeTemp;
 
             currElevChange = (positions.get(i+1).getElevation() - positions.get(i).getElevation());
-            //System.out.println(currElev);
             runningElevKm += currElevChange;
             runningElevMile += currElevChange;
 
@@ -141,12 +148,12 @@ public class GPSMaster {
                 double realSplitTime = runningSplitTimeKm - extraTimeToCarry;
 
                 splits.put(splitIndex, new Split(realSplitTime, 1000, runningElevKm, false));
-                runningSplitTimeKm = extraTimeToCarry;
-                runningSplitDistanceKm = runningSplitDistanceKm - 1000;
+                runningSplitTimeKm = 0;
+                runningSplitDistanceKm = 0.0;
                 runningElevKm = 0;
                 splitIndex++;
             }
-            else if(runningSplitDistanceMile > 1609.34) {
+            if(runningSplitDistanceMile > 1609.34) {
                 double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceMile - 1609.34, runningSplitTimeMile, 1609.34);
                 double realSplitTime = runningSplitTimeMile - extraTimeToCarry;
 
@@ -185,50 +192,28 @@ public class GPSMaster {
 
     private void averageKMPace() {
         double runningAvg=0;
-        ArrayList<Double> splitTimes = getTimeSplitsFor(1000);
-        KMSplits = splitTimes;
+        int numSplits = 0;
 
-        for(double split: splitTimes) {
-            runningAvg += (split/60) / 1;
+        for(Split currSplit: splits.values()) {
+            if(currSplit.getSplit() == 1000) {
+                numSplits++;
+                runningAvg += (currSplit.getTime()/60) / 1;
+            }
         }
-        avgKMPace = runningAvg/splitTimes.size();
+        avgKMPace = runningAvg/numSplits;
     }
 
     private void averageMilePace() {
         double runningAvg=0;
-        ArrayList<Double> splitTimes = getTimeSplitsFor(1609.34);
-        MileSplits = splitTimes;
+        int numSplits = 0;
 
-        for(double split: splitTimes) {
-            runningAvg += (split/60) / 1;
-        }
-         avgMilePace = runningAvg/splitTimes.size();
-    }
-    //TODO: make algorithm to subtract time for extra distance traveled over split::DONE
-    private ArrayList<Double> getTimeSplitsFor(double distance) {
-        ArrayList<Double> timeTaken = new ArrayList<>();
-        double distanceUndertaken = 0;
-        double splitTime=0;
-
-        for(int i=0; i < positions.size()-1; i++) {
-            distanceUndertaken += haversine(positions.get(i).getLatitude(), positions.get(i+1).getLatitude(), positions.get(i).getLongitude(), positions.get(i+1).getLongitude());
-            splitTime += timeBetweenTwoPositions(positions.get(i), positions.get(i+1));
-
-            if(distanceUndertaken > distance) {
-                //Potentially broken
-                splitTime -= adjustTimeTakenOverDistance(distanceUndertaken - distance, splitTime, distance);
-                timeTaken.add(splitTime);
-                distanceUndertaken = 0;
-                splitTime = 0;
+        for(Split currSplit: splits.values()) {
+            if(currSplit.getSplit() == 1609.34) {
+                numSplits++;
+                runningAvg += (currSplit.getTime()/60) / 1;
             }
         }
-        //TODO: get average pace for distance left over::DONE
-        timeTaken.add(splitTime + getProjectedTimeForUnfinishedSplit(distanceUndertaken, distance));
-        return timeTaken;
-    }
-
-    private double getProjectedTimeForUnfinishedSplit(double distanceSoFar, double wantedDistance) {
-        return (wantedDistance-distanceSoFar)/(((averageSpeed/60)/60)*1000);
+        avgMilePace = runningAvg/numSplits;
     }
 
     /**
@@ -245,6 +230,7 @@ public class GPSMaster {
         return (wantedDistance-distanceSoFar)/(((avgSpeed/60)/60)*1000);
     }
 
+    //TODO: use average speed over last, say, 50 meters not the entire split!
     /**
      * Not fully possible to get time taken over exactly 1km or 1mile with data so this method gets the extra distance traveled
      * over the required distance and works how far you've traveled based on average speed
@@ -256,9 +242,9 @@ public class GPSMaster {
         return extraDistanceTraveled/(((avgSpeed/60)/60)*1000);
     }
 
-    public String getAveragePaceIn(String distance) {
+    private String getAveragePaceIn(String distance) {
         double decimalToSecs;
-        String split ="";
+        String split;
 
         switch (distance) {
             case "Mile":
@@ -274,6 +260,12 @@ public class GPSMaster {
         return split(decimalToSecs, split);
     }
 
+    /**
+     *
+     * @param time  time in seconds
+     * @param splitType type Km or Mile
+     * @return String in correct time format e.g(3:28 m/Km)
+     */
     private String split(double time, String splitType) {
         int mins =0;
         while(time > 1) {
@@ -298,7 +290,7 @@ public class GPSMaster {
 
         while(it.hasNext()) {
             HashMap.Entry<Integer, Split> entry = (HashMap.Entry<Integer, Split>)it.next();
-            
+
             if(entry.getValue().getSplit() == 1000) {
                 KmSplits += ("--  " + ((splitKmIndex < 10) ? ("0" + splitKmIndex) : splitKmIndex) + (entry.getValue()).toString())+ "\n";
                 splitKmIndex++;
