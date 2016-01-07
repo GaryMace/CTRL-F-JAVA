@@ -22,8 +22,22 @@ public class GPSMaster {
         splits = new HashMap<>();
         positions = new HashMap<>();
 
+        readData("./inputFiles/Got some nice tan lines.gpx");
+        //readData("./inputFiles/New max HR.gpx");
+        //readData("./inputFiles/Time to drink my miles in units.gpx");
+        //readData("./inputFiles/1Km Sprint.gpx");
+        //readData("./inputFiles/4Km Dunshaughlin.gpx");
+        //eadData("./inputFiles/5Km Dunshaughlin Fast.gpx");
+        //readData("./inputFiles/10Km Dunshaughlin.gpx");
+        //readData("./inputFiles/SPEED 5x3mins.gpx");
+        //readData("./inputFiles/SPEED 10x400m Dunshaughlin.gpx");
+        //readData("./inputFiles/SPEED 12x1.30mins Dunshaughlin.gpx");
+        //readData("./inputFiles/SPEED 12x1.30mins UCD.gpx");
+        //readData("./inputFiles/5Km Skryne race.gpx");
+        //readData("./inputFiles/3Km UCD Sprint.gpx");
         //readData("./inputFiles/1 Mile Sprint.gpx");
-        readData("./inputFiles/16Km Dunshaughlin.gpx");
+        //readData("./inputFiles/16Km Dunshaughlin.gpx");
+
         totalDistanceAndTimes();
         averageSpeed();
         averageKMPace();
@@ -195,7 +209,7 @@ public class GPSMaster {
     private String timeFromString(String timeString) {               //TODO: change to regular expressions
         int hrs = Integer.parseInt(timeString.substring(11, 13));
         int mins = Integer.parseInt(timeString.substring(14, 16));
-        float secs = Float.parseFloat(timeString.substring(17, 21));
+        float secs = Float.parseFloat(timeString.substring(17, 19));
 
         return hrs+":"+mins+":"+secs;
     }
