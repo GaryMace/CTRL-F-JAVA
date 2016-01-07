@@ -123,6 +123,10 @@ public class GPSMaster {
         double runningElevKm = 0;
         double runningElevMile = 0;
         double currElevChange;
+        double endOfSplitTimeKm = 0;
+        double endOfSplitTimeMile = 0;
+        double endOfSplitDistanceKm = 0;
+        double endOfSplitDistanceMile = 0;
         int splitIndex = 1;
 
         for(int i=0; i < positions.size()-1; i++) {
@@ -143,25 +147,35 @@ public class GPSMaster {
             runningElevKm += currElevChange;
             runningElevMile += currElevChange;
 
-            if(runningSplitDistanceKm > 1000) {
-                double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, runningSplitTimeKm, 1000);
-                double realSplitTime = runningSplitTimeKm - extraTimeToCarry;
+            if(runningSplitDistanceKm > 975) {
+                endOfSplitTimeKm += timeTemp;
+                endOfSplitDistanceKm += distanceTemp;
 
-                splits.put(splitIndex, new Split(realSplitTime, 1000, runningElevKm, false));
-                runningSplitTimeKm = 0;
-                runningSplitDistanceKm = 0.0;
-                runningElevKm = 0;
-                splitIndex++;
+                if(runningSplitDistanceKm > 1000) {
+                    double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, endOfSplitTimeKm, endOfSplitDistanceKm);
+                    double realSplitTime = runningSplitTimeKm - extraTimeToCarry;
+
+                    splits.put(splitIndex, new Split(realSplitTime, 1000, runningElevKm, false));
+                    runningSplitTimeKm = 0;
+                    runningSplitDistanceKm = 0.0;
+                    runningElevKm = 0;
+                    splitIndex++;
+                }
             }
-            if(runningSplitDistanceMile > 1609.34) {
-                double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceMile - 1609.34, runningSplitTimeMile, 1609.34);
-                double realSplitTime = runningSplitTimeMile - extraTimeToCarry;
+            if(runningSplitDistanceMile > 1584.34) {
+                endOfSplitTimeMile += timeTemp;
+                endOfSplitDistanceMile += distanceTemp;
 
-                splits.put(splitIndex, new Split(realSplitTime, 1609.34, runningElevMile, false));
-                runningSplitTimeMile = extraTimeToCarry;
-                runningSplitDistanceMile = runningSplitDistanceMile - 1609.34;
-                runningElevMile = 0;
-                splitIndex++;
+                if(runningSplitDistanceMile > 1609.34) {
+                    double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceMile - 1609.34, endOfSplitTimeMile, endOfSplitDistanceMile);
+                    double realSplitTime = runningSplitTimeMile - extraTimeToCarry;
+
+                    splits.put(splitIndex, new Split(realSplitTime, 1609.34, runningElevMile, false));
+                    runningSplitTimeMile = extraTimeToCarry;
+                    runningSplitDistanceMile = runningSplitDistanceMile - 1609.34;
+                    runningElevMile = 0;
+                    splitIndex++;
+                }
             }
         }
 
