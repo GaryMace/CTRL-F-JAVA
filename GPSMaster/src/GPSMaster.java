@@ -110,6 +110,10 @@ public class GPSMaster {
         double runningSplitDistanceMile = 0;
         double distanceTemp = 0;
         double timeTemp = 0;
+        double runningElevKm = 0;
+        double runningElevMile = 0;
+        double currElevChange = 0;
+        double overallElev = 0;
         int splitIndex = 1;
 
         //We're going to be resetting the split after each km/mile so we add the split distance to overall distance, not the other way round
@@ -127,24 +131,35 @@ public class GPSMaster {
             runningSplitTimeMile += timeTemp;
             runningTime += timeTemp;
 
+            currElevChange = (positions.get(i+1).getElevation() - positions.get(i).getElevation());
+            //System.out.println(currElev);
+            runningElevKm += currElevChange;
+            runningElevMile += currElevChange;
+
             if(runningSplitDistanceKm > 1000) {
-                double realSplitTime = runningSplitTimeKm - adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, runningSplitTimeKm, 1000);
-                splits.put(splitIndex, new Split(realSplitTime, 1000, false));
-                runningSplitTimeKm = adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, runningSplitTimeKm, 1000);
-                runningSplitDistanceKm = runningSplitDistanceKm-1000;
+                double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceKm - 1000, runningSplitTimeKm, 1000);
+                double realSplitTime = runningSplitTimeKm - extraTimeToCarry;
+
+                splits.put(splitIndex, new Split(realSplitTime, 1000, runningElevKm, false));
+                runningSplitTimeKm = extraTimeToCarry;
+                runningSplitDistanceKm = runningSplitDistanceKm - 1000;
+                runningElevKm = 0;
                 splitIndex++;
             }
             else if(runningSplitDistanceMile > 1609.34) {
-                double realSplitTime = runningSplitTimeMile - adjustTimeTakenOverDistance(runningSplitDistanceMile - 1609.34, runningSplitTimeMile, 1609.34);
-                splits.put(splitIndex, new Split(realSplitTime, 1609.34, false));
-                runningSplitTimeMile = 0.0;
-                runningSplitDistanceMile = 0.0;
+                double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceMile - 1609.34, runningSplitTimeMile, 1609.34);
+                double realSplitTime = runningSplitTimeMile - extraTimeToCarry;
+
+                splits.put(splitIndex, new Split(realSplitTime, 1609.34, runningElevMile, false));
+                runningSplitTimeMile = extraTimeToCarry;
+                runningSplitDistanceMile = runningSplitDistanceMile - 1609.34;
+                runningElevMile = 0;
                 splitIndex++;
             }
         }
-        
-        splits.put(splitIndex++, new Split(runningSplitTimeKm + getProjectedTimeForUnfinishedSplit(runningSplitDistanceKm, 1000, runningSplitTimeKm), 1000, true));
-        splits.put(splitIndex++, new Split(runningSplitTimeMile + getProjectedTimeForUnfinishedSplit(runningSplitDistanceMile, 1609.34, runningSplitTimeMile), 1609.34, true));
+
+        splits.put(splitIndex++, new Split(runningSplitTimeKm + getProjectedTimeForUnfinishedSplit(runningSplitDistanceKm, 1000, runningSplitTimeKm), 1000, runningElevKm, true));
+        splits.put(splitIndex++, new Split(runningSplitTimeMile + getProjectedTimeForUnfinishedSplit(runningSplitDistanceMile, 1609.34, runningSplitTimeMile), 1609.34, runningElevMile, true));
         overallDistance = runningDistance;
         overallTime = runningTime;
     }
@@ -277,11 +292,13 @@ public class GPSMaster {
         int splitKmIndex = 1;
         int splitMileIndex = 1;
 
-        System.out.println("-------------------------------------------------------------");
-        System.out.println("-- Split  |  Avg.Speed(km/h)  |  Pace(m/Km)  |  Elevation  --");
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("-- Split  |  Avg.Speed(km/h)  |  Pace(m/Km)  | Elevation(m) --");
+        System.out.println("----------+-------------------+--------------+----------------");
+
         while(it.hasNext()) {
             HashMap.Entry<Integer, Split> entry = (HashMap.Entry<Integer, Split>)it.next();
+            
             if(entry.getValue().getSplit() == 1000) {
                 KmSplits += ("--  " + ((splitKmIndex < 10) ? ("0" + splitKmIndex) : splitKmIndex) + (entry.getValue()).toString())+ "\n";
                 splitKmIndex++;
@@ -293,9 +310,9 @@ public class GPSMaster {
 
         }
         System.out.println(KmSplits+"\n\n");
-        System.out.println("-------------------------------------------------------------");
-        System.out.println("-- Split  |  Avg.Speed(km/h)  |  Pace(m/M)  |  Elevation  --");
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("-- Split  |  Avg.Speed(km/h)  |   Pace(m/M)  | Elevation(m) --");
+        System.out.println("----------+-------------------+--------------+----------------");
         System.out.println(MileSplits);
     }
 

@@ -5,11 +5,13 @@ public class Split {
     private double split;
     private double time;
     private boolean isProjectedSplit;
+    private double elevation;
 
-    public Split(double time, double split, boolean isProjectedSplit) {
+    public Split(double time, double split, double elev, boolean isProjectedSplit) {
         this.time = time;
         this.split = split;
         this.isProjectedSplit = isProjectedSplit;
+        this.elevation = elev;
     }
 
     private String getSpeed() {
@@ -40,16 +42,22 @@ public class Split {
         return split;
     }
 
-    public boolean isProjectedSplit() { return isProjectedSplit; }
+    public boolean isProjectedSplit() {
+        return isProjectedSplit;
+    }
+
+    public String getElevation() {
+        return String.format("%.2f",elevation);
+    }
 
     //TODO: get elevation
     public String toString() {
-        String format = "%4s|%4s%8s%7s|%1s%8s%5s|%2s";
+        String format = "%4s|%4s%8s%7s|%1s%8s%5s|%4s%6s%4s--";
         if(isProjectedSplit) {
-            return String.format(format, " ", " ", "(P)"+getSpeed(), " "," ", "(P)"+getPace(), " ", " ");
+            return String.format(format, " ", " ", "(P)"+getSpeed(), " "," ", "(P)"+getPace(), " ", " ", getElevation(), " ");
         }
         else {
-            return String.format(format, " ", " ",""+getSpeed(), " "," ", ""+getPace()," ", " ");
+            return String.format(format, " ", " ",""+getSpeed(), " "," ", ""+getPace()," ", " ", getElevation(), " ");
         }
     }
 }
