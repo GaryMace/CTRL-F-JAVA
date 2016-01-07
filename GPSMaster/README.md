@@ -12,6 +12,6 @@
   Likewise if a runner does 10x2mins sprint intervals the program will also detect this and tell the user how
   far they went over all the individual splits and the average distance they traveled. 
   
-  However first I need to get all the basic functionality working, that is, get the Km/Mile splits average speeds etc.
+  However first I need to get all the basic functionality working, that is, get the Km/Mile splits and average speeds etc.
 
   The end goal for this project, however, is to implement accurate short distance interval training analysis. 
