@@ -3,6 +3,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Gary on 24-Nov-15.
@@ -22,7 +24,7 @@ public class GPSMaster {
         splits = new HashMap<>();
         positions = new HashMap<>();
 
-        readData("./inputFiles/Got some nice tan lines.gpx");
+        //readData("./inputFiles/Got some nice tan lines.gpx");
         //readData("./inputFiles/New max HR.gpx");
         //readData("./inputFiles/Time to drink my miles in units.gpx");
         //readData("./inputFiles/1Km Sprint.gpx");
@@ -30,7 +32,7 @@ public class GPSMaster {
         //eadData("./inputFiles/5Km Dunshaughlin Fast.gpx");
         //readData("./inputFiles/10Km Dunshaughlin.gpx");
         //readData("./inputFiles/SPEED 5x3mins.gpx");
-        //readData("./inputFiles/SPEED 10x400m Dunshaughlin.gpx");
+        readData("./inputFiles/SPEED 10x400m Dunshaughlin.gpx");
         //readData("./inputFiles/SPEED 12x1.30mins Dunshaughlin.gpx");
         //readData("./inputFiles/SPEED 12x1.30mins UCD.gpx");
         //readData("./inputFiles/5Km Skryne race.gpx");
@@ -108,8 +110,10 @@ public class GPSMaster {
         if(line.contains(token)) {
             return Double.parseDouble(line.split(token)[1].split("\"")[1]);
         }
-        return -1;
+
+       return -1;
     }
+
 
     //TODO: Change to regular expressions to avoid potential ArrayOutOfBoundsExceptions
     private String readStringAfterToken(String line, String token) {
@@ -118,7 +122,6 @@ public class GPSMaster {
         }
         return null;
     }
-
     //TODO: get splits for Mile's/Km's here :: DONE
 
     /**Method responsible for getting the splits over 1Km, 1 Mile, the elevations of each split. Stores this data in a Split object.
@@ -143,6 +146,11 @@ public class GPSMaster {
         double endOfSplitDistanceMile = 0;
         int splitIndex = 1;
 
+        double carryD = 0;
+        double time;
+        double speed;
+        double carryTime = 0;
+
         for(int i=0; i < positions.size()-1; i++) {
             if ((i + 1) == positions.size() - 1) {
                 break;
@@ -161,6 +169,22 @@ public class GPSMaster {
             runningElevKm += currElevChange;
             runningElevMile += currElevChange;
 
+            //TODO: Interval training calc
+
+            double distanceRemaining = distanceTemp;
+            while(distanceRemaining - (10-carryD)  > 0) {
+                time = (10-carryD)/(distanceTemp/timeTemp);
+                time = time+carryTime;
+                speed = (0.01)/((time/60)/60);
+                distanceRemaining -= (10-carryD);
+                System.out.println(Math.floor(speed));
+                carryD = 0;
+                carryTime = 0;
+            }
+            carryD += distanceRemaining;
+            carryTime += distanceRemaining/(distanceTemp/timeTemp);
+
+            //For getting the average speed over the last 25 meters of a split (For readjusting inaccurate distance traveled)
             if(runningSplitDistanceKm > 975) {
                 endOfSplitTimeKm += timeTemp;
                 endOfSplitDistanceKm += distanceTemp;
@@ -170,12 +194,14 @@ public class GPSMaster {
                     double realSplitTime = runningSplitTimeKm - extraTimeToCarry;
 
                     splits.put(splitIndex, new Split(realSplitTime, 1000, runningElevKm, false));
-                    runningSplitTimeKm = 0;
-                    runningSplitDistanceKm = 0.0;
+                    runningSplitTimeKm = extraTimeToCarry;
+                    runningSplitDistanceKm = runningSplitDistanceKm - 1000;
                     runningElevKm = 0;
                     splitIndex++;
                 }
             }
+
+            //Done for the same as done above for the Km splits
             if(runningSplitDistanceMile > 1584.34) {
                 endOfSplitTimeMile += timeTemp;
                 endOfSplitDistanceMile += distanceTemp;
@@ -201,6 +227,7 @@ public class GPSMaster {
 
     private double timeBetweenTwoPositions(GlobalPosition pos1, GlobalPosition pos2) {
         double timeAtPos1,timeAtPos2;
+
         timeAtPos1 = (pos1.getTime().getHours()*60*60) + (pos1.getTime().getMinutes()*60)+ pos1.getTime().getSeconds();
         timeAtPos2 = (pos2.getTime().getHours()*60*60) + (pos2.getTime().getMinutes()*60)+ pos2.getTime().getSeconds();
         return timeAtPos2 - timeAtPos1;
@@ -258,7 +285,7 @@ public class GPSMaster {
         return (wantedDistance-distanceSoFar)/(((avgSpeed/60)/60)*1000);
     }
 
-    //TODO: use average speed over last, say, 50 meters not the entire split!
+    //TODO: use average speed over last, say, 50 meters not the entire split! ::Done
     /**
      * Not fully possible to get time taken over exactly 1km or 1mile with data so this method gets the extra distance traveled
      * over the required distance and works how far you've traveled based on average speed
