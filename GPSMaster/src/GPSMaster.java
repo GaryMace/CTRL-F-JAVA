@@ -1,10 +1,6 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Gary on 24-Nov-15.
@@ -19,41 +15,30 @@ public class GPSMaster {
     private double averageSpeed;
     private double avgKMPace;
     private double avgMilePace;
+    private String fileName;
 
-    public GPSMaster() {
+    public GPSMaster(String fileName) {
+        this.fileName = fileName;
         splits = new HashMap<>();
         positions = new HashMap<>();
 
-        //readData("./inputFiles/Got some nice tan lines.gpx");
-        //readData("./inputFiles/New max HR.gpx");
-        //readData("./inputFiles/Time to drink my miles in units.gpx");
-        //readData("./inputFiles/1Km Sprint.gpx");
-        //readData("./inputFiles/4Km Dunshaughlin.gpx");
-        //eadData("./inputFiles/5Km Dunshaughlin Fast.gpx");
-        //readData("./inputFiles/10Km Dunshaughlin.gpx");
-        //readData("./inputFiles/SPEED 5x3mins.gpx");
-        readData("./inputFiles/SPEED 10x400m Dunshaughlin.gpx");
-        //readData("./inputFiles/SPEED 12x1.30mins Dunshaughlin.gpx");
-        //readData("./inputFiles/SPEED 12x1.30mins UCD.gpx");
-        //readData("./inputFiles/5Km Skryne race.gpx");
-        //readData("./inputFiles/3Km UCD Sprint.gpx");
-        //readData("./inputFiles/1 Mile Sprint.gpx");
-        //readData("./inputFiles/16Km Dunshaughlin.gpx");
-
+        readData(fileName);
         totalDistanceAndTimes();
         averageSpeed();
         averageKMPace();
         averageMilePace();
-        printSplits();
+        writeInfoToFile();
     }
 
     private void readData(String fileName) {
         int hashMapIndex = 0;
         BufferedReader fileReader;
-        double currLat = 0;
-        double currLon = 0;
-        double currElev = 0;
-        String currTime = "";
+        double currLat;
+        double currLon;
+        double currElev;
+        String currTime;
+        boolean needsClosingBrace = false;
+        boolean needsOpeningBrace;
 
         try {
             fileReader = new BufferedReader(new FileReader(fileName));
@@ -64,26 +49,54 @@ public class GPSMaster {
             }
 
             while(!(line.equalsIgnoreCase("</trkseg>"))) {
+                currLat = 0;
+                currLon = 0;
+                currElev = 0;
+                currTime = "";//consider making an object for this
+                needsOpeningBrace = true;
+
                 while(!(line.equalsIgnoreCase("</trkpt>"))) {
                     if(line.contains("<trkpt")) {
+                        needsOpeningBrace = false;
+                        if(needsClosingBrace ==  true) {
+                            CorruptDataException();
+                        }
+                        needsClosingBrace = true;
                         currLat = readDoubleAfterString(line, "lat=");
                         currLon = readDoubleAfterString(line, "lon=");
                     }
                     else if(line.contains("<ele>")) {
-                        currElev = Double.parseDouble(readStringAfterToken(line, "<ele>"));
+                        try {
+                            currElev = Double.parseDouble(readStringAfterToken(line, "<ele>"));
+                        } catch(Exception e) {  //handle this
+                            CorruptDataException();
+                        }
                     }
                     else if(line.contains("<time>")) {
                         currTime = readStringAfterToken(line, "<time>");
+                        if(currTime == null || currTime.length() == 0) {
+                            CorruptDataException();
+                        }
                         currTime = timeFromString(currTime);
                     }
                     line = fileReader.readLine().replaceAll("\\s", "");
                 }
+                needsClosingBrace = false;
+                if(needsOpeningBrace) {
+                    CorruptDataException();
+                }
+                needsOpeningBrace = true;
+
+                if(currLat == -1 || currLon == -1 || currTime.equals("") || currElev == 0.0) {
+                    CorruptDataException();
+                }
+
                 line = fileReader.readLine().replaceAll("\\s", "");
                 positions.put(hashMapIndex++, new GlobalPosition(currLat, currLon, currElev, currTime));
             }
 
-        } catch(IOException e ) {
-            e.printStackTrace();
+        } catch(Exception e ) {
+            System.out.println("Unexpected error opening/reading file (check file format, must be .gpx)");
             System.exit(0);
         }
     }
@@ -104,25 +117,37 @@ public class GPSMaster {
         return E_RADIUS * 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    //Grabs double value associated with lat/lon
-    //TODO: Change to regular expressions to avoid potential ArrayOutOfBoundsExceptions
+    /**
+     *
+     * @param line line to search token in
+     * @param token string to search for in line
+     * @return double contained within double quotes in line
+     */
     private double readDoubleAfterString(String line, String token) {
         if(line.contains(token)) {
-            return Double.parseDouble(line.split(token)[1].split("\"")[1]);
+            try {
+                return Double.parseDouble(line.split(token)[1].split("\"")[1]);
+            } catch(Exception e) {
+                CorruptDataException();
+            }
         }
 
        return -1;
     }
 
-
-    //TODO: Change to regular expressions to avoid potential ArrayOutOfBoundsExceptions
+    /**
+     *
+     * @param line line to search token for
+     * @param token string to search for in line
+     * @return string following directly after token
+     */
     private String readStringAfterToken(String line, String token) {
         if(line.contains(token)) {
             return line.split(token)[1].split("<")[0];
         }
+
         return null;
     }
-    //TODO: get splits for Mile's/Km's here :: DONE
 
     /**Method responsible for getting the splits over 1Km, 1 Mile, the elevations of each split. Stores this data in a Split object.
      *
@@ -146,15 +171,7 @@ public class GPSMaster {
         double endOfSplitDistanceMile = 0;
         int splitIndex = 1;
 
-        double carryD = 0;
-        double time;
-        double speed;
-        double carryTime = 0;
-
         for(int i=0; i < positions.size()-1; i++) {
-            if ((i + 1) == positions.size() - 1) {
-                break;
-            }
             distanceTemp = haversine(positions.get(i).getLatitude(), positions.get(i+1).getLatitude(), positions.get(i).getLongitude(), positions.get(i+1).getLongitude());
             runningSplitDistanceKm += distanceTemp;
             runningSplitDistanceMile += distanceTemp;
@@ -168,21 +185,6 @@ public class GPSMaster {
             currElevChange = (positions.get(i+1).getElevation() - positions.get(i).getElevation());
             runningElevKm += currElevChange;
             runningElevMile += currElevChange;
-
-            //TODO: Interval training calc
-
-            double distanceRemaining = distanceTemp;
-            while(distanceRemaining - (10-carryD)  > 0) {
-                time = (10-carryD)/(distanceTemp/timeTemp);
-                time = time+carryTime;
-                speed = (0.01)/((time/60)/60);
-                distanceRemaining -= (10-carryD);
-                System.out.println(Math.floor(speed));
-                carryD = 0;
-                carryTime = 0;
-            }
-            carryD += distanceRemaining;
-            carryTime += distanceRemaining/(distanceTemp/timeTemp);
 
             //For getting the average speed over the last 25 meters of a split (For readjusting inaccurate distance traveled)
             if(runningSplitDistanceKm > 975) {
@@ -202,7 +204,7 @@ public class GPSMaster {
             }
 
             //Done for the same as done above for the Km splits
-            if(runningSplitDistanceMile > 1584.34) {
+            if(runningSplitDistanceMile > 1584.34) { //use constans for mile or Km
                 endOfSplitTimeMile += timeTemp;
                 endOfSplitDistanceMile += distanceTemp;
 
@@ -225,15 +227,26 @@ public class GPSMaster {
         overallTime = runningTime;
     }
 
+    /**
+     *
+     * @param pos1 position 1
+     * @param pos2 position 2
+     * @return time difference in seconds between position 1 and 2
+     */
     private double timeBetweenTwoPositions(GlobalPosition pos1, GlobalPosition pos2) {
         double timeAtPos1,timeAtPos2;
-
+        //java time date implementations
         timeAtPos1 = (pos1.getTime().getHours()*60*60) + (pos1.getTime().getMinutes()*60)+ pos1.getTime().getSeconds();
         timeAtPos2 = (pos2.getTime().getHours()*60*60) + (pos2.getTime().getMinutes()*60)+ pos2.getTime().getSeconds();
         return timeAtPos2 - timeAtPos1;
     }
 
-    private String timeFromString(String timeString) {               //TODO: change to regular expressions
+    /**
+     *
+     * @param timeString String containing date and time
+     * @return String in HH:MM:SS format
+     */
+    private String timeFromString(String timeString) {
         int hrs = Integer.parseInt(timeString.substring(11, 13));
         int mins = Integer.parseInt(timeString.substring(14, 16));
         float secs = Float.parseFloat(timeString.substring(17, 19));
@@ -245,12 +258,15 @@ public class GPSMaster {
         averageSpeed = (overallDistance/1000)/((overallTime/60)/60);
     }
 
+    /**Assigns avgKmPace the average time it toke to do a kilometre. Ignores projected splits
+     *
+     */
     private void averageKMPace() {
         double runningAvg=0;
         int numSplits = 0;
 
         for(Split currSplit: splits.values()) {
-            if(currSplit.getSplit() == 1000) {
+            if(currSplit.getSplit() == 1000 && !(currSplit.isProjectedSplit())) {
                 numSplits++;
                 runningAvg += (currSplit.getTime()/60) / 1;
             }
@@ -258,12 +274,15 @@ public class GPSMaster {
         avgKMPace = runningAvg/numSplits;
     }
 
+    /**Assigns avgMilePace the average time it toke to do a mile. Ignores projected splits
+     *
+     */
     private void averageMilePace() {
         double runningAvg=0;
         int numSplits = 0;
 
         for(Split currSplit: splits.values()) {
-            if(currSplit.getSplit() == 1609.34) {
+            if(currSplit.getSplit() == 1609.34 && !(currSplit.isProjectedSplit())) {
                 numSplits++;
                 runningAvg += (currSplit.getTime()/60) / 1;
             }
@@ -297,11 +316,16 @@ public class GPSMaster {
         return extraDistanceTraveled/(((avgSpeed/60)/60)*1000);
     }
 
+    /**
+     *
+     * @param distance String representing a split, either Km or Mile
+     * @return String in format MM:SS
+     */
     private String getAveragePaceIn(String distance) {
         double decimalToSecs;
         String split;
 
-        switch (distance) {
+        switch (distance) {//uncommon to use switch in this case
             case "Mile":
                 decimalToSecs = avgMilePace;
                 split="Mile";
@@ -329,59 +353,94 @@ public class GPSMaster {
         }
         time *= 60;
 
-        return mins+":"+(int)time+" m/"+splitType;
+        return mins+":"+((time < 10) ? ("0"+ (int)time) : (int)time);
     }
 
-    private void printSplits() {
+    /**Simply writes the data obtained from the rest of the program to a .CSV file
+     *
+     */
+    private void writeInfoToFile() {
         String KmSplits = "";
         String MileSplits = "";
         Iterator it = splits.entrySet().iterator();
         int splitKmIndex = 1;
         int splitMileIndex = 1;
+        FileWriter writer = null;
+        //filewriter are closable
+        try {
+            writer = new FileWriter("SplitResults.csv");
+            writer.append("File Name:"+","+getFileName()+"\n\n");
+            writer.append("Split:,Avg Speed(km/h),Pace(m/Km),Elevation(m)");
+            writer.append("\n");
 
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("-- Split  |  Avg.Speed(km/h)  |  Pace(m/Km)  | Elevation(m) --");
-        System.out.println("----------+-------------------+--------------+----------------");
+            while(it.hasNext()) {
+                HashMap.Entry<Integer, Split> entry = (HashMap.Entry<Integer, Split>)it.next();
 
-        while(it.hasNext()) {
-            HashMap.Entry<Integer, Split> entry = (HashMap.Entry<Integer, Split>)it.next();
+                if(entry.getValue().getSplit() == 1000) {
+                    KmSplits += ((splitKmIndex < 10) ? ("0" + splitKmIndex) : splitKmIndex)+ "," + (entry.getValue()).toString()+ "\n";
+                    splitKmIndex++;
+                }
+                else if(entry.getValue().getSplit() == 1609.34) {
+                    MileSplits += ((splitMileIndex < 10) ? ("0" + splitMileIndex) : splitMileIndex) + "," + (entry.getValue()).toString() +"\n";
+                    splitMileIndex++;
+                }
 
-            if(entry.getValue().getSplit() == 1000) {
-                KmSplits += ("--  " + ((splitKmIndex < 10) ? ("0" + splitKmIndex) : splitKmIndex) + (entry.getValue()).toString())+ "\n";
-                splitKmIndex++;
             }
-            else if(entry.getValue().getSplit() == 1609.34) {
-                MileSplits += ("--  " + ((splitMileIndex < 10) ? ("0" + splitMileIndex) : splitMileIndex) + (entry.getValue()).toString())+"\n";
-                splitMileIndex++;
-            }
+            writer.append(KmSplits);
+            writer.append("\n\n");
+            writer.append("Split:,Avg Speed(km/h),Pace(m/M),Elevation(m)\n");
+            writer.append(MileSplits);
+            writer.append("\n\n");
+            writer.append("Total Distance(m):,"+getOverallDistance()+"\n");
+            writer.append("Time(secs):,"+getOverallTime()+"\n");
+            writer.append("Avg Speed(km/h):," +getAverageSpeed()+"\n");
+            writer.append("Avg Mile Pace(m/M):,"+getAveragePaceIn("Mile")+"\n");
+            writer.append("Avg Km Pace(m/Km):,"+getAveragePaceIn("Km")+"\n");
+            System.out.println("CSV file successfully created !!");
 
         }
-        System.out.println(KmSplits+"\n\n");
-        System.out.println("--------------------------------------------------------------");
-        System.out.println("-- Split  |  Avg.Speed(km/h)  |   Pace(m/M)  | Elevation(m) --");
-        System.out.println("----------+-------------------+--------------+----------------");
-        System.out.println(MileSplits);
+        catch(Exception e) {
+            System.out.println("Unexpected error writing to .csv file");
+        }
+        finally {
+            try {
+                writer.flush();
+                writer.close();
+            }catch(IOException e) {
+                System.out.println("Unexpected error flushing/closing file writer");
+            }
+        }
     }
 
+    private void CorruptDataException() {
+        System.out.println("Unexpected Error: data is corrupt");
+        System.exit(0);
+    }
 
-    public double getOverallDistance() {
-        return overallDistance;
+    public String getOverallDistance() {
+        return String.format("%.2f",overallDistance);
     }
 
     public double getOverallTime() {
         return overallTime;
     }
 
-    public double getAverageSpeed() {
-        return averageSpeed;
+    public String getAverageSpeed() {
+        return String.format("%.2f", averageSpeed);
+    }
+
+    public String getFileName() {
+        return this.fileName;
     }
 
     public static void main(String[] args) {
-        GPSMaster myGps = new GPSMaster();
-        System.out.println("Distance: "+myGps.getOverallDistance()+" metres");
-        System.out.println("Time: "+myGps.getOverallTime()+" secs");
-        System.out.println("Avg.Speed: "+myGps.getAverageSpeed()+" km/h");
-        System.out.println("Avg Mile Pace: "+ myGps.getAveragePaceIn("Mile"));
-        System.out.println("Avg Km Pace: "+ myGps.getAveragePaceIn("Km"));
+        if(args.length > 0 ) {
+           new GPSMaster(args[0]);
+        }
+        else {
+            System.out.println("Error: No command line arugments given");
+            System.exit(0);
+        }
+
     }
 }

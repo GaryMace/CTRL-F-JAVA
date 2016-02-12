@@ -52,12 +52,11 @@ public class Split {
 
     //TODO: get elevation
     public String toString() {
-        String format = "%4s|%4s%8s%7s|%1s%8s%5s|%4s%6s%4s--";
         if(isProjectedSplit) {
-            return String.format(format, " ", " ", "(P)"+getSpeed(), " "," ", "(P)"+getPace(), " ", " ", getElevation(), " ");
+            return "(P)"+getSpeed()+","+"(P)"+getPace()+","+getElevation();
         }
         else {
-            return String.format(format, " ", " ",""+getSpeed(), " "," ", ""+getPace()," ", " ", getElevation(), " ");
+            return getSpeed()+","+getPace()+","+getElevation();
         }
     }
 }
