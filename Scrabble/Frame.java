@@ -1,3 +1,5 @@
+package SuperScrabble;
+
 import java.util.ArrayList;
 
 /**
@@ -5,11 +7,15 @@ import java.util.ArrayList;
  */
 public class Frame {
         public static final int MAX_FRAME_SIZE_FLAG = 7;
-        public static final int TILE_NOT_IN_FRAME_FLAG = -1;
+        public static final int FRAME_TILE_NOT_FOUND = -1;
         private ArrayList<Tile> tiles;
 
         public Frame() {
                 tiles = new ArrayList<>();
+        }
+
+        Frame(Frame originalFrame) {
+                this.tiles = new ArrayList<>( originalFrame.getTiles() );
         }
 
         public ArrayList<Tile> getTiles() {
@@ -17,9 +23,12 @@ public class Frame {
         }
 
         public Tile removeTile(char tileLetter) {
-                int index;
-                if( (index = hasTile(tileLetter)) != TILE_NOT_IN_FRAME_FLAG ) {
-                        return tiles.remove(index);
+                for(int i=0; i < tiles.size(); i++) {
+                        Tile t = tiles.get(i);
+
+                        if(t.getFace() == tileLetter) {
+                                return tiles.remove(i);
+                        }
                 }
                 return null;
         }
@@ -32,15 +41,21 @@ public class Frame {
                                 return i;
                         }
                 }
-                return -1;
+                return FRAME_TILE_NOT_FOUND;
         }
 
         public boolean isEmpty() {
                 return tiles.size() == 0;
         }
 
-        public void refillFrame(Tile t) {
-                tiles.add(t);
+        public void refillFrame(Pool p) {
+                while(tiles.size() < MAX_FRAME_SIZE_FLAG) {
+                        Tile t = p.drawTile();
+                        if(t == null) {
+                                break;
+                        }
+                        tiles.add(t);
+                }
         }
 
         public int size() {

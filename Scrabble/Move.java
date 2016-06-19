@@ -1,3 +1,5 @@
+package SuperScrabble;
+
 /**
  * Created by Gary on 14/06/2016.
  */
@@ -6,7 +8,7 @@ public class Move {
         private String direction;
         private GridRef location;
 
-        public Move(GridRef location, String word, String direction) {
+        public Move(GridRef location, String direction, String word) {
                 this.location = location;
                 this.word = word;
                 this.direction = direction;

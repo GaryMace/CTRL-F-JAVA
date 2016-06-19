@@ -1,3 +1,5 @@
+package SuperScrabble;
+
 /**
  * Created by Gary on 13/06/2016.
  */

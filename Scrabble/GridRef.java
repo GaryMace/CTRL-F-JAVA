@@ -1,3 +1,5 @@
+package SuperScrabble;
+
 public class GridRef {
 	private int row, column;
 	

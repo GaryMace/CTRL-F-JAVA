@@ -1,3 +1,5 @@
+package SuperScrabble;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,16 +74,6 @@ public class Pool {
                         );
                 }
                 return null;
-        }
-
-        public void refillFrame(Frame f) {
-                while(f.size() < Frame.MAX_FRAME_SIZE_FLAG) {
-                        Tile t = drawTile();
-                        if(t == null) {
-                                break;
-                        }
-                        f.refillFrame( drawTile() );
-                }
         }
 
         public static int tileValue(char key) {
