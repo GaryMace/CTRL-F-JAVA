@@ -1,82 +1,66 @@
-package SuperScrabble;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
-/**
- *
- * Created by Gary on 13/06/2016.
- */
 public class Pool {
-        private static Random rand;
-        private static final char TILE_BLANK = '#';
-        private static HashMap<Character, Integer> TILE_QUANTITIES;
-        private static HashMap<Character, Integer> TILE_VALUES;
-        private ArrayList<Tile> pool;
 
-        public Pool() {
-                rand = new Random();
-                pool = new ArrayList<>();
+        private static final int NUM_BLANKS = 2;
+        private static final int[] NUM_TILES = {9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1};  // A-Z
 
-                //Every time someone uses double brace initialisation, a kitten gets killed.
-                TILE_QUANTITIES = new HashMap<Character, Integer>() {{      //Double brace initialisation, #YOLO MAN
-                        put('a', 9); put('b', 2); put('c', 2); put('d', 4);
-                        put('e', 12); put('f', 2); put('g', 3); put('h', 2);
-                        put('i', 9); put('j', 1); put('k', 1); put('l', 4);
-                        put('m', 2); put('n', 6); put('o', 8); put('p', 2);
-                        put('q', 1); put('r', 6); put('s', 4); put('t', 6);
-                        put('u', 4); put('v', 2); put('w', 2); put('x', 1);
-                        put('y', 2); put('z', 1); put('#', 2);
-                }};
-                TILE_VALUES = new HashMap<Character, Integer>() {{
-                        put('a', 1); put('b', 3); put('c', 3); put('d', 2);
-                        put('e', 1); put('f', 4); put('g', 2); put('h', 4);
-                        put('i', 1); put('j', 8); put('k', 5); put('l', 1);
-                        put('m', 3); put('n', 1); put('o', 1); put('p', 3);
-                        put('q', 10); put('r', 1); put('s', 1); put('t', 1);
-                        put('u', 1); put('v', 4); put('w', 4); put('x', 8);
-                        put('y', 4); put('z', 10); put('#', 0);
-                }};
+        private Random randomGenerator = new Random();
 
-                populatePool();
-        }
+        private ArrayList<Tile> pool = new ArrayList<Tile>();
 
-        private void populatePool() {
-                for(Map.Entry entry : TILE_QUANTITIES.entrySet()) {
-                        for(int tileCount=0; tileCount < (int) entry.getValue(); tileCount++) {
-                                char letter = (char) entry.getKey();
-                                pool.add(
-                                        new Tile( letter, TILE_VALUES.get(letter) )
-                                );
-                        }
+        Pool() {
+                Tile tile;
+                char face;
+                for (int i = 0; i < NUM_BLANKS; i++) {
+                        tile = new Tile(Tile.BLANK);
+                        pool.add(tile);
                 }
-        }
-
-        public void resetPool() {
-                pool = new ArrayList<>();
-                populatePool();
+                face = 'A';
+                for (int i = 0; i < NUM_TILES.length; i++) {
+                        for (int j = 0; j < NUM_TILES[i]; j++) {
+                                tile = new Tile(face);
+                                pool.add(tile);
+                        }
+                        face++;
+                }
+                return;
         }
 
         public int size() {
-                return pool.size();
+                return (pool.size());
         }
 
         public boolean isEmpty() {
-                return pool.size() == 0;
+                return (pool.isEmpty());
         }
 
-        public Tile drawTile() {
-                if( !isEmpty() ) {
-                        return pool.remove(
-                                rand.nextInt( pool.size() )
-                        );
+        public void add(Tile tile) {
+                pool.add(tile);
+        }
+
+        public Tile getRandomTile() {
+                int index = randomGenerator.nextInt(pool.size());
+                return (pool.get(index));
+        }
+
+        public ArrayList<Tile> draw(int numRequested) {
+                int numGiven;
+                ArrayList<Tile> drawnTiles = new ArrayList<Tile>();
+                Tile tile;
+
+                if (numRequested > pool.size())
+                        numGiven = pool.size();
+                else {
+                        numGiven = numRequested;
                 }
-                return null;
+                for (int i = 0; i < numGiven; i++) {
+                        tile = getRandomTile();
+                        drawnTiles.add(tile);
+                        pool.remove(tile);
+                }
+                return (drawnTiles);
         }
 
-        public static int tileValue(char key) {
-                return Pool.TILE_VALUES.get(key); //Potential null pointer error?
-        }
 }

@@ -1,40 +1,75 @@
-package SuperScrabble;
 
-/**
- * Created by Gary on 13/06/2016.
- */
+
 public class Player {
-        private String pName;
-        private int pScore;
-        private Frame pFrame;
 
-        public Player() {
-                pFrame = new Frame();
+        private static int NUM_PASSES_LIMIT = 3;
+
+        private String name;
+        private int score, undoScore;
+        private int numPasses, undoNumPasses;   // consecutive passes
+        public Frame frame = new Frame();
+
+        Player() {
+                name = "";
+                score = 0;
+                undoScore = 0;
+                numPasses = 0;
+                undoNumPasses = 0;
+        }
+
+        public void setName(String text) {
+                name = text;
+                System.out.println(text);
+                return;
         }
 
         public String getName() {
-                return pName;
+                return (name);
         }
 
-        public void setName(String pName) {
-                this.pName = pName;
+
+        public void addScore(int increment) {
+                undoScore = score;
+                score = score + increment;
+                undoNumPasses = numPasses;
+                numPasses = 0;
+                return;
+        }
+
+        public void pass() {
+                numPasses++;
+                return;
+        }
+
+        public boolean isOverPassLimit() {
+                return (numPasses >= NUM_PASSES_LIMIT);
         }
 
         public int getScore() {
-                return pScore;
-        }
-
-        public void setScore(int pScore) {
-                this.pScore = pScore;
+                return (score);
         }
 
         public Frame getFrame() {
-                return pFrame;
+                return (frame);
         }
 
-        public void reset() {
-                pScore = 0;
-                pFrame = new Frame();
-                pName = "";
+        public int getNumPasses() {
+                return (numPasses);
+        }
+
+        public int unusedLettersScore() {
+                int unused = 0;
+                for (Tile tile : frame.getAllTiles()) {
+                        unused = unused + tile.getValue();
+                }
+                return (unused);
+        }
+
+        public void undo() {
+                score = undoScore;
+                numPasses = undoNumPasses + 1;
+                return;
         }
 }
+
+

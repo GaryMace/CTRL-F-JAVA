@@ -1,393 +1,358 @@
-package SuperScrabble;
-
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Stack;
 
-/**
- * Created by Gary on 14/06/2016.
- */
 public class Board {
         public static final int SINGLE_LETTER = 1;
         public static final int DOUBLE_LETTER = 2;
         public static final int TRIPLE_LETTER = 3;
         public static final int DOUBLE_WORD = 4;
         public static final int TRIPLE_WORD = 5;
+        public static final int[][] SQ_VALUE =
+                //   A  B  C  D  E  F  G  H  I  J  K  L  M  N  O
+                {{5, 1, 1, 2, 1, 1, 1, 5, 1, 1, 1, 2, 1, 1, 5},   // 1
+                        {1, 4, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 4, 1},   // 2
+                        {1, 1, 4, 1, 1, 1, 2, 1, 2, 1, 1, 1, 4, 1, 1},   // 3
+                        {2, 1, 1, 4, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 2},   // 4
+                        {1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1},   // 5
+                        {1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1},   // 6
+                        {1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1},   // 7
+                        {5, 1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 2, 1, 1, 5},   // 8
+                        {1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1},   // 9
+                        {1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1},   // 10
+                        {1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1},   // 11
+                        {2, 1, 1, 4, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 2},   // 12
+                        {1, 1, 4, 1, 1, 1, 2, 1, 2, 1, 1, 1, 4, 1, 1},   // 13
+                        {1, 4, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 4, 1},   // 14
+                        {5, 1, 1, 2, 1, 1, 1, 5, 1, 1, 1, 2, 1, 1, 5}}; // 15
 
-        private static final char BOARD_TILE_EMPTY = ' ';
-        private static final String BOARD_ACROSS = "Across";
-        private static final String BOARD_DOWN = "Down";
-        private static final int BOARD_DIMENSION = 15;
-        private static final int BOARD_CENTER = 7;
-        private static final boolean BOARD_WORD_OUT_OF_BOUNDS = false;
-        private static final boolean BOARD_WORD_INBOUNDS = true;
-        private static final boolean BOARD_HAS_CORRECT_TILES = true;
-        private static final boolean BOARD_HAS_INCORRECT_TILES = false;
-        private static final boolean BOARD_WORD_CONFLICT_IGNORABLE_FLAG = true;
-        private static final boolean BOARD_WORD_POS_UNACCEPTABLE= false;
-        private static final boolean BOARD_WORD_POS_ACCEPTABLE = true;
-        private static final boolean BOARD_WORD_CONNECTION_FOUND = true;
-        private static final boolean BOARD_WORD_CONNECTION_NOT_FOUND = false;
-        private static final boolean BOARD_INVALID_DIRECTION = false;
-        private static final boolean BOARD_VALID_DIRECTION = true;
-        private boolean BOARD_IS_CONFLICT_IGNORABLE = false;
+        public static final int SIZE = 15;
+        public static final int CENTRE = 7;
+        public static final char EMPTY = ' ';
 
+        private char[][] sqContents = new char[SIZE][SIZE];
+        private int numPlays, wordScore;
+        private ArrayList<Word> newWords = new ArrayList<Word>();
+        private ArrayList<GridRef> newSquares = new ArrayList<GridRef>();
 
-        private char[][] board;
-        private boolean[][] isBoardPosOccupied;
-        private ArrayList<GridRef> boardTilePositions;
-        public static final int[][] BOARD_POSITION_VALUES = {
-                //1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F
-                {5, 1, 1, 2, 1, 1, 1, 5, 1, 1, 1, 2, 1, 1, 5},  // 1
-                {1, 4, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 4, 1},  // 2
-                {1, 1, 4, 1, 1, 1, 2, 1, 2, 1, 1, 1, 4, 1, 1},  // 3
-                {2, 1, 1, 4, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 2},  // 4
-                {1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1},  // 5
-                {1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1},  // 6
-                {1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1},  // 7
-                {5, 1, 1, 2, 1, 1, 1, 4, 1, 1, 1, 2, 1, 1, 5},  // 8
-                {1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1},  // 9
-                {1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 3, 1},  // 10
-                {1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1},  // 11
-                {2, 1, 1, 4, 1, 1, 1, 2, 1, 1, 1, 4, 1, 1, 2},  // 12
-                {1, 1, 4, 1, 1, 1, 2, 1, 2, 1, 1, 1, 4, 1, 1},  // 13
-                {1, 4, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 1, 4, 1},  // 14
-                {5, 1, 1, 2, 1, 1, 1, 5, 1, 1, 1, 2, 1, 1, 5}   // 15
-        };
-
-        public Board() {
-                initialize();
+        Board() {
+                numPlays = 0;
+                for (int r = 0; r < SIZE; r++) {
+                        for (int c = 0; c < SIZE; c++) {
+                                sqContents[r][c] = EMPTY;
+                        }
+                }
+                return;
         }
 
-        public void playWord(Player player, Move m) {
-                String direction = m.getDirection();
-                String word = m.getWord();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
+        public int getWordScore() {
+                return (wordScore);
+        }
 
-                if( isAcross(direction) ) {
-                        for(int i = 0; i < word.length(); i++) {
-                                if(!isBoardPosOccupied[row][col+i]) {
-                                        addToBoard(row, col, 0, i, word.charAt(i));
-                                        player.getFrame().removeTile(word.charAt(i));
+        public char getSqContents(int row, int column) {
+                return (sqContents[row][column]);
+        }
+
+        public ArrayList<String> getWords() {
+                // precondition: ran getNewWords
+                ArrayList<String> justWords = new ArrayList<String>();
+                for (int i = 0; i < newWords.size(); i++) {
+                        justWords.add(newWords.get(i).getLetters());
+                }
+                return (justWords);
+        }
+
+        public boolean isFirstPlay() {
+                return (numPlays == 0);
+        }
+
+
+        private boolean searchBox(int startRow, int endRow, int startColumn, int endColumn) {
+                boolean found = false;
+                for (int r = startRow; r <= endRow; r++) {
+                        for (int c = startColumn; c <= endColumn; c++) {
+                                if (sqContents[r][c] != EMPTY) {
+                                        found = true;
                                 }
                         }
+                }
+                return (found);
+        }
+
+
+        public int checkWord(Word word, Frame frame) {
+
+                int checkCode = UI.WORD_OK;
+                int startRow, startColumn, length, endRow, endColumn;
+                int r, c;
+                int frameLettersUsed = 0;
+                char letter;
+                Frame copyFrame = new Frame(frame);
+                boolean foundExistingLetter = false, foundConnection = false;
+
+                startRow = word.getStartRow();
+                startColumn = word.getStartColumn();
+                length = word.getLength();
+                if (word.isVertical()) {
+                        endRow = startRow + length - 1;
+                        endColumn = startColumn;
                 } else {
-                        for(int i = 0; i < word.length(); i++) {
-                                if(!isBoardPosOccupied[row+i][col]) {
-                                        addToBoard(row, col, i, 0, word.charAt(i));
-                                        player.getFrame().removeTile(word.charAt(i));
-                                }
-                        }
-                }
-                //remove words from frame
-                printBoard();
-        }
-
-        public boolean checkWord(Frame playerFrame, Move m) {
-                //If not first word then needs to connect to another word, Uses at least one tile from rack
-                if( !validDirection(m) ) {
-                        System.out.println("Invalid direction");
-                        return BOARD_INVALID_DIRECTION;
-                }
-                if( !firstWordAtBoardCenter(m) ) {
-                        System.out.println("Not at center");
-                        return BOARD_WORD_POS_UNACCEPTABLE;
-                }
-                if( !isWordInBounds(m) ) {
-                        System.out.println("Word out of bounds");
-                        return BOARD_WORD_OUT_OF_BOUNDS;
-                }
-                if( !isWordConnectedToAnotherTile(m) ) {
-                        System.out.println("Not connected");
-                        return BOARD_WORD_POS_UNACCEPTABLE;
-                }
-                if( !doesPlayerHaveNecessaryTiles(playerFrame, m) ) {
-                        System.out.println("Dont have necessary tiles");
-                        return BOARD_HAS_INCORRECT_TILES;
-                }
-                if( !doesWordPositionCauseConflicts(m) ) {
-                        System.out.println("Causes conflicts");
-                        return BOARD_WORD_POS_UNACCEPTABLE;
+                        endRow = startRow;
+                        endColumn = startColumn + length - 1;
                 }
 
-                return BOARD_WORD_POS_ACCEPTABLE;
-        }
-
-        private boolean validDirection(Move m) {
-                String direction = m.getDirection();
-                if( isAcross(direction) || isDown(direction) ) {
-                        return BOARD_VALID_DIRECTION;
+                // Check 1st move
+                if ((numPlays == 0) &&
+                        ((word.isHorizontal() &&
+                                ((startRow != CENTRE) || (startColumn > CENTRE) || (endColumn < CENTRE))) ||
+                                (word.isVertical() &&
+                                        ((startColumn != CENTRE) || (startRow > CENTRE) || (endRow < CENTRE))))) {
+                        checkCode = UI.WORD_INCORRECT_FIRST_PLAY;
                 }
-
-                return BOARD_INVALID_DIRECTION;
-        }
-
-        private void initialize() {
-                board = new char[BOARD_DIMENSION][BOARD_DIMENSION];
-                isBoardPosOccupied = new boolean[BOARD_DIMENSION][BOARD_DIMENSION];
-                boardTilePositions = new ArrayList<>();
-
-                for(int row = 0; row < board.length; row++) {
-                        for(int col = 0; col < board[0].length; col++) {
-                                board[row][col] = ' ';
-                                isBoardPosOccupied[row][col] = false;
-                        }
-                }
-        }
-
-        private boolean firstWordAtBoardCenter(Move m) {
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                if( boardTilePositions.isEmpty() && (row != BOARD_CENTER || col != BOARD_CENTER)) {
-                    return BOARD_WORD_POS_UNACCEPTABLE;
-                }
-                return BOARD_WORD_POS_ACCEPTABLE;
-        }
-
-        private boolean isWordConnectedToAnotherTile(Move m) {
-                if( boardTilePositions.isEmpty() ) {
-                        return BOARD_WORD_POS_ACCEPTABLE;
-                }
-                if( isTileAlongWordSides(m) || isTileAtEitherEndOfWord(m) ) {
-                        return BOARD_WORD_POS_ACCEPTABLE;
-                }
-
-                return BOARD_WORD_POS_UNACCEPTABLE;
-        }
-
-        private boolean isWordInBounds(Move m) {
-                String direction = m.getDirection();
-                String word = m.getWord();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                if( isAcross(direction) ) {
-                        if(col + word.length() >= BOARD_DIMENSION) {
-                                return BOARD_WORD_OUT_OF_BOUNDS;
-                        }
+                // Check in bounds
+                else if ((startRow < 0) || (startRow >= SIZE) || (startColumn < 0) || (startColumn >= SIZE) ||
+                        (word.isHorizontal() && (endColumn >= SIZE)) ||
+                        (word.isVertical() && (endRow >= SIZE))) {
+                        checkCode = UI.WORD_OUT_OF_BOUNDS;
                 } else {
-                        if(row + word.length() >= BOARD_DIMENSION) {
-                                return BOARD_WORD_OUT_OF_BOUNDS;
-                        }
-                }
-
-                return BOARD_WORD_INBOUNDS;
-        }
-
-        private boolean doesWordPositionCauseConflicts(Move m) {
-                String direction = m.getDirection();
-                String word = m.getWord();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                if( isAcross(direction) ) {
-                        for(int i=0; i < word.length();i++) {
-                                if( !hasConflictAt(row, col, 0, i) ) {
-                                        return BOARD_WORD_POS_UNACCEPTABLE;
-                                }
-                        }
-                } else {
-                        for(int i=0; i < word.length();i++) {
-                                if( !hasConflictAt(row, col, i, 0) ) {
-                                        return BOARD_WORD_POS_UNACCEPTABLE;
-                                }
-                        }
-                }
-                return BOARD_WORD_POS_ACCEPTABLE;
-        }
-
-        private boolean hasConflictAt(int row, int col, int v, int h) {
-                if(isBoardPosOccupied[row + v][col + h] ) {
-                        if(BOARD_IS_CONFLICT_IGNORABLE) {
-                                return BOARD_WORD_POS_ACCEPTABLE;
-                        } else {
-                                return BOARD_WORD_POS_UNACCEPTABLE;
-                        }
-                }
-
-                return BOARD_WORD_POS_ACCEPTABLE;
-        }
-
-        /**
-         * The stack prevents multiple identical characters from the input word being matched to the same tile letter
-         * from the frame.
-         *
-         * @param playerFrame The player to check
-         * @param m           The players move
-         * @return true if player has correct tiles, false if they don't
-         */
-        private boolean doesPlayerHaveNecessaryTiles(Frame playerFrame, Move m) {
-                Stack<Tile> lettersMatched = new Stack<>();
-                Frame testFrame = new Frame(playerFrame);
-                String word = m.getWord();
-                int indexOfCharFromFrame;
-
-                for(int i=0; i < word.length(); i++) {
-                        char letter = word.charAt(i);
-                        indexOfCharFromFrame = testFrame.hasTile(letter);
-
-                        if( indexOfCharFromFrame == Frame.FRAME_TILE_NOT_FOUND ) {
-                                if( !isLetterOnBoard(letter, m, i) ) {
-                                        BOARD_IS_CONFLICT_IGNORABLE = !BOARD_WORD_CONFLICT_IGNORABLE_FLAG;
-
-                                        return BOARD_HAS_INCORRECT_TILES;
-                                }
-                                BOARD_IS_CONFLICT_IGNORABLE = BOARD_WORD_CONFLICT_IGNORABLE_FLAG;
-                        } else {
-                                if( isLetterOnBoard(letter, m, i) ) {
-                                        BOARD_IS_CONFLICT_IGNORABLE = BOARD_WORD_CONFLICT_IGNORABLE_FLAG;
-                                } else {
-                                        lettersMatched.push( testFrame.getTiles().get(indexOfCharFromFrame) );
-                                }
-
-                        }
-                }
-
-                return BOARD_HAS_CORRECT_TILES;
-        }
-
-        /**
-         * This is a panic mode style method. If the user enters "hello" but dont have an 'e' in their frame this method
-         * checks the index that would coincide with the 'e' character on the board to see if the user meant to use the
-         * tile from the board.
-         *
-         * @param letterToFind  Character to find
-         * @param m       Players move object
-         * @param atIndex Expect to find character at this index
-         * @return true if found on board, false if not
-         */
-        private boolean isLetterOnBoard(char letterToFind, Move m, int atIndex) {
-                String direction = m.getDirection();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                if( isAcross(direction) ) {
-                        return letterToFind == board[row][col + atIndex];
-                }
-
-                return letterToFind == board[row + atIndex][col];
-        }
-
-        private boolean isTileAlongWordSides(Move m) {
-                String direction = m.getDirection();
-                String word = m.getWord();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                if( isAcross(direction) ) {
-                        for(int i=0; i < word.length(); i++) {
-                                if( !(row-1 < 0) && isBoardPosOccupied[row - 1][col + i] ) {
-                                        return BOARD_WORD_CONNECTION_FOUND;
-                                }
-                                if( !(row+1 > BOARD_DIMENSION) && isBoardPosOccupied[row + 1][col + i] ) {
-                                        return BOARD_WORD_CONNECTION_FOUND;
-                                }
-                        }
-                } else {
-                        for(int i=0; i < word.length(); i++) {
-                                if( !(col-1 < 0) && isBoardPosOccupied[row + i][col - 1] ) {
-                                        return BOARD_WORD_CONNECTION_FOUND;
-                                }
-                                if( !(col+1 > BOARD_DIMENSION) && isBoardPosOccupied[row + i][col + 1] ) {
-                                        return BOARD_WORD_CONNECTION_FOUND;
-                                }
-                        }
-                }
-                return BOARD_WORD_CONNECTION_NOT_FOUND;
-        }
-
-        private boolean isTileAtEitherEndOfWord(Move m) {
-                String direction = m.getDirection();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                if( isAcross(direction) ) {
-                        if( !(col-1 < 0) && isBoardPosOccupied[row][col - 1] ) {
-                                return BOARD_WORD_CONNECTION_FOUND;
-                        }
-                        if( !(col+1 > BOARD_DIMENSION) && isBoardPosOccupied[row][col + 1] ) {
-                                return BOARD_WORD_CONNECTION_FOUND;
-                        }
-                } else {
-                        if( !(row-1 < 0) && isBoardPosOccupied[row - 1][col] ) {
-                                return BOARD_WORD_CONNECTION_FOUND;
-                        }
-                        if( !(row+1 > BOARD_DIMENSION) && isBoardPosOccupied[row + 1][col] ) {
-                                return BOARD_WORD_CONNECTION_FOUND;
-                        }
-                }
-
-                return BOARD_WORD_CONNECTION_NOT_FOUND;
-        }
-
-        private boolean isAcross(String direction) {
-                return direction.equalsIgnoreCase(BOARD_ACROSS);
-        }
-
-        private boolean isDown(String direction) {
-                return direction.equalsIgnoreCase(BOARD_DOWN);
-        }
-
-        // v for vertical play, h for horizontal play... can this be made better?
-        private void addToBoard(int row, int col, int v, int h, char c) {
-                board[row + v][col + h] = c;
-                isBoardPosOccupied[row + v][col + h] = true;
-                boardTilePositions.add( new GridRef(row, col) );
-        }
-
-        private void displayBoardHeader() {
-                char column = 'A';
-                System.out.print("    ");
-                for (int c = 0; c < BOARD_DIMENSION; c++) {
-                        System.out.printf("%c ", column);
-                        column++;
-                }
-                System.out.println();
-        }
-
-        //Tests, remove later
-        public void printBoard() {
-                int row = 1;
-                char boardChar;
-
-                displayBoardHeader();
-                for(int r=0; r < BOARD_DIMENSION; r++) {
-                        System.out.printf("%2d| ", row);
-                        for(int c=0; c < BOARD_DIMENSION; c++) {
-                                boardChar = board[r][c];
-
-                                if(boardChar == BOARD_TILE_EMPTY) {
-                                        switch( BOARD_POSITION_VALUES[r][c] ) {
-                                                case SINGLE_LETTER:
-                                                        System.out.print("  ");
-                                                        break;
-                                                case DOUBLE_LETTER:
-                                                        System.out.print("DL");
-                                                        break;
-                                                case TRIPLE_LETTER:
-                                                        System.out.print("TL");
-                                                        break;
-                                                case DOUBLE_WORD:
-                                                        System.out.print("DW");
-                                                        break;
-                                                case TRIPLE_WORD:
-                                                        System.out.print("TW");
-                                                        break;
+                        // Try to put the letters on the board
+                        r = startRow;
+                        c = startColumn;
+                        for (int i = 0; i < length; i++) {
+                                letter = word.getLetter(i);
+                                // Check empty square
+                                if (sqContents[r][c] == EMPTY) {
+                                        // Check letter available
+                                        if (copyFrame.isAvailable(letter)) {
+                                                copyFrame.removeChar(letter);
+                                                frameLettersUsed++;
+                                        } else {
+                                                checkCode = UI.WORD_LETTER_NOT_IN_FRAME;
                                         }
+                                }
+                                // Check no clash with existing letter
+                                else {
+                                        if (sqContents[r][c] != letter) {
+                                                checkCode = UI.WORD_LETTER_CLASH;
+                                        } else {
+                                                foundExistingLetter = true;
+                                        }
+                                }
+                                // Next letter
+                                if (word.isHorizontal()) {
+                                        c++;
                                 } else {
-                                        System.out.printf("%c ", boardChar);
+                                        r++;
                                 }
                         }
-                        System.out.printf(" |%2d\n", row);
-                        row++;
+                        // Check at least 1 letter placed
+                        if ((checkCode == UI.WORD_OK) && (frameLettersUsed == 0)) {
+                                checkCode = UI.WORD_NO_LETTER_FROM_FRAME;
+                        } else if ((checkCode == UI.WORD_OK) && (numPlays > 0)) {
+
+                                // Check if word contains letters already on the board
+                                if (foundExistingLetter) {
+                                        foundConnection = true;
+                                } else {
+                                        // Check for connections at the perimeter of the word
+                                        if (word.isVertical()) {
+                                                if (startColumn > 0) {
+                                                        foundConnection = searchBox(startRow, endRow, startColumn - 1, endColumn - 1);
+                                                }
+                                                if ((startRow > 0) && (!foundConnection)) {
+                                                        foundConnection = searchBox(startRow - 1, startRow - 1, startColumn, endColumn);
+                                                }
+                                                if ((endRow < Board.SIZE - 1) && (!foundConnection)) {
+                                                        foundConnection = searchBox(endRow + 1, endRow + 1, startColumn, endColumn);
+                                                }
+                                                if ((startColumn < Board.SIZE - 1) && (!foundConnection)) {
+                                                        foundConnection = searchBox(startRow, endRow, startColumn + 1, endColumn + 1);
+                                                }
+                                        } else {  // isHorizontal
+                                                if (startRow > 0) {
+                                                        foundConnection = searchBox(startRow - 1, endRow - 1, startColumn, endColumn);
+                                                }
+                                                if ((startColumn > 0) && (!foundConnection)) {
+                                                        foundConnection = searchBox(startRow, endRow, startColumn - 1, startColumn - 1);
+                                                }
+                                                if ((endColumn < Board.SIZE - 1) && (!foundConnection)) {
+                                                        foundConnection = searchBox(startRow, endRow, endColumn + 1, endColumn + 1);
+                                                }
+                                                if ((startRow < Board.SIZE - 1) && (!foundConnection)) {
+                                                        foundConnection = searchBox(startRow + 1, endRow + 1, startColumn, endColumn);
+                                                }
+                                        }
+                                }
+                                if (!foundConnection) {
+                                        checkCode = UI.WORD_NO_CONNECTION;
+                                }
+                        }
                 }
-                displayBoardHeader();
-                System.out.println();
+                return (checkCode);
         }
 
-        public void reset() {
-                initialize();
+
+        private int getWordScore(Word word) {
+                // precondition: checkWord(word,frame) returns WORD_OK
+                int score, wordValue, charValue, charMultiplier = 1, wordMultiplier = 1;
+                int row, column;
+                String letters;
+
+                wordValue = 0;
+                row = word.getStartRow();
+                column = word.getStartColumn();
+                letters = word.getLetters();
+                for (int i = 0; i < word.getLength(); i++) {
+                        charValue = Tile.getValue(letters.charAt(i));
+                        charMultiplier = 1;  // default
+                        if (sqContents[row][column] == EMPTY) {
+                                switch (SQ_VALUE[row][column]) {
+                                        case SINGLE_LETTER:
+                                                break;
+                                        case DOUBLE_LETTER:
+                                                charMultiplier = 2;
+                                                break;
+                                        case TRIPLE_LETTER:
+                                                charMultiplier = 3;
+                                                break;
+                                        case DOUBLE_WORD:
+                                                wordMultiplier = 2 * wordMultiplier;
+                                                break;
+                                        case TRIPLE_WORD:
+                                                wordMultiplier = 3 * wordMultiplier;
+                                }
+                        }
+                        if (word.isHorizontal()) {
+                                column++;
+                        } else {
+                                row++;
+                        }
+                        wordValue = wordValue + charValue * charMultiplier;
+                }
+                score = wordValue * wordMultiplier;
+                return (score);
         }
+
+
+        private Word growWord(Word word) {
+                Word newWord;
+                StringBuffer letters = new StringBuffer();
+                int startRow, endRow, startColumn, endColumn, length;
+
+                startRow = word.getStartRow();
+                startColumn = word.getStartColumn();
+                length = word.getLength();
+                letters.append(word.getLetters());
+                if (word.isVertical()) {
+                        endRow = startRow + length - 1;
+                        while ((startRow > 0) && (sqContents[startRow - 1][startColumn] != EMPTY)) {
+                                startRow--;
+                                letters.insert(0, sqContents[startRow][startColumn]);
+                        }
+                        while ((endRow < Board.SIZE - 1) && (sqContents[endRow + 1][startColumn] != EMPTY)) {
+                                endRow++;
+                                letters.append(sqContents[endRow][startColumn]);
+                        }
+                } else {  // isHorizontal
+                        endColumn = startColumn + length - 1;
+                        while ((startColumn > 0) && (sqContents[startRow][startColumn - 1] != EMPTY)) {
+                                startColumn--;
+                                letters.insert(0, sqContents[startRow][startColumn]);
+                        }
+                        while ((endColumn < Board.SIZE - 1) && (sqContents[startRow][endColumn + 1] != EMPTY)) {
+                                endColumn++;
+                                letters.append(sqContents[startRow][endColumn]);
+                        }
+                }
+                newWord = new Word(startRow, startColumn, word.getDirection(), letters.toString());
+
+                return (newWord);
+        }
+
+
+        private ArrayList<Word> getNewWords(Word word) {
+                ArrayList<Word> newWords = new ArrayList<Word>();
+                Word newWord, wordSeed;
+                int row, column, length, oppositeDirection;
+                char letter;
+
+                // Extend the word placed to include all letters before and after the new letters
+                newWord = growWord(word);
+                newWords.add(newWord);
+
+                // For each new letter, search in the opposite direction for new words
+                row = word.getStartRow();
+                column = word.getStartColumn();
+                length = word.getLength();
+                oppositeDirection = word.getOppositeDirection();
+                for (int i = 0; i < length; i++) {
+                        if (sqContents[row][column] == EMPTY) {
+                                letter = word.getLetter(i);
+                                wordSeed = new Word(row, column, oppositeDirection, Character.toString(letter));
+                                newWord = growWord(wordSeed);
+                                if (newWord.getLength() > 1) {
+                                        newWords.add(newWord);
+                                }
+                        }
+                        if (word.isVertical()) {
+                                row++;
+                        } else {
+                                column++;
+                        }
+                }
+
+                return (newWords);
+        }
+
+
+        public int getTotalWordScore(Word word) {
+                int totalWordScore = 0;
+
+                newWords = getNewWords(word);
+                for (Word newWord : newWords) {
+                        totalWordScore = totalWordScore + getWordScore(newWord);
+                }
+
+                return (totalWordScore);
+        }
+
+
+        public int setWord(Word word, Frame frame) {
+                // precondition: checkWord(word,frame) returns WORD_OK
+                // postcondition: this method places the word on the board, removes the letters from
+                // the frame, increments the number of plays and calculates the score
+                int row, column, index;
+                int totalWordScore;
+                char currentLetter;
+
+                frame.resetUndo();
+                newSquares.clear();
+                totalWordScore = getTotalWordScore(word);
+                row = word.getStartRow();
+                column = word.getStartColumn();
+                for (int i = 0; i < word.getLength(); i++) {
+                        currentLetter = word.getLetter(i);
+                        if (sqContents[row][column] == EMPTY) {
+                                newSquares.add(new GridRef(row, column));
+                                index = frame.find(currentLetter);
+                                frame.removeAt(index);
+                                sqContents[row][column] = currentLetter;
+                        }
+                        if (word.isHorizontal()) {
+                                column++;
+                        } else {
+                                row++;
+                        }
+                }
+                numPlays++;
+                return (totalWordScore);
+        }
+
+
+        public void undo() {
+                for (int i = 0; i < newSquares.size(); i++) {
+                        sqContents[newSquares.get(i).getRow()][newSquares.get(i).getColumn()] = EMPTY;
+                }
+                numPlays--;
+                return;
+        }
+
 }
