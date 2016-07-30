@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class Pool {
         private static Random rand;
-        public static final char BLANK_TILE = '#';
+        public static final char BLANK_TILE = '#';      //TODO: handle blank tiles
         private static HashMap<Character, Integer> TILE_QUANTITIES;
         private static HashMap<Character, Integer> TILE_VALUES;
         private ArrayList<Tile> pool;

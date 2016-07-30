@@ -39,8 +39,8 @@ public class UI {
                 System.out.println("|                                                                           |");
                 System.out.println("|         Move syntax is row(1-15) col(A-O) across|down 'word'              |");
                 System.out.println("|         E.g. '8 H Across doop'                                            |");
-                System.out.println("+---------+-----------------------------------------------------------------+");
-                System.out.println();
+               /* System.out.println("+---------+-----------------------------------------------------------------+");
+                System.out.println();*/
         }
 
         public static void displayHelp() {
@@ -53,22 +53,23 @@ public class UI {
                 System.out.println("|Challenge| Enter 'Challenge' or 'C' to challenge previous play             |");
                 System.out.println("|Play word| Enter '<Row> <Col> <Across|Down> <letters>' to make a play      |");
                 System.out.println("+---------+-----------------------------------------------------------------+");
+                System.out.println();
         }
 
         public static void goodbyeMessage() {
-                System.out.println("{'-'} Thanks for playing!");
+                System.out.println("\n{'-'} Thanks for playing!");
         }
 
         public static void displayExchangeSuccessful() {
-                System.out.println("{'-'}:: Exchange Successful, ending your turn!");
+                System.out.println("\n{'-'}:: Exchange Successful, ending your turn!");
         }
 
         public static void displayPlayerScores(Player p1, Player p2) {
-                System.out.println(p1.getName()+"'s score is: "+p1.getScore()+"\t\t"+p2.getName()+"'s score is:"+p2.getScore());
+                System.out.println(p1.getName()+"'s score is: "+p1.getScore()+"\t\t"+p2.getName()+"'s score is: "+p2.getScore());
         }
 
-        public static void displayWordScore() {
-
+        public static void displayWordScore(int score, Player player) {
+                System.out.println("\n{'-'}:: "+player.getName()+" just scored "+score+"!\n");
         }
 
         private void displayBoardHeader() {
@@ -84,28 +85,28 @@ public class UI {
         public static void displayError(int commandCode) {
                 switch(commandCode) {
                         case UI_ERROR_INVALID_DIRECTION:
-                                System.out.println("{'o'}:: You entered an invalid direction, try using HELP!");
+                                System.out.println("\n{'o'}:: You entered an invalid direction, try using HELP!");
                                 break;
                         case UI_ERROR_FIRST_WORD_NOT_AT_CENTER:
-                                System.out.println("{'o'}:: The first move must be in the centre of the board! {8 H}");
+                                System.out.println("\n{'o'}:: The first move must be in the centre of the board! {8 H}");
                                 break;
                         case UI_ERROR_WORD_OUT_OF_BOUNDS:
-                                System.out.println("{'o'}:: Your move went out of bounds somewhere!");
+                                System.out.println("\n{'o'}:: Your move went out of bounds somewhere!");
                                 break;
                         case UI_ERROR_WORD_CONNECTION_NOT_FOUND:
-                                System.out.println("{'o'}:: Your word didn't connect to another word on the board!");
+                                System.out.println("\n{'o'}:: Your word didn't connect to another word on the board!");
                                 break;
                         case UI_ERROR_INCORRECT_TILES:
-                                System.out.println("{'o'}:: You don't have the correct tiles for that move!");
+                                System.out.println("\n{'o'}:: You don't have the correct tiles for that move!");
                                 break;
                         case UI_ERROR_WORD_PLACEMENT_CONFLICT:
-                                System.out.println("{'o'}:: Your move conflicts with existing board tiles!");
+                                System.out.println("\n{'o'}:: Your move conflicts with existing board tiles!");
                                 break;
                         case UI_ERROR_NOT_ENOUGH_TILES_IN_POOL_TO_EXCHANGE:
-                                System.out.println("{'o'}:: There's not enough tiles left in the pool to exchange your input!");
+                                System.out.println("\n{'o'}:: There's not enough tiles left in the pool to exchange your input!");
                                 break;
                         case UI_ERROR_TILE_TO_EXCHANGE_NOT_IN_FRAME:
-                                System.out.println("{'o'}:: You can't exchange a tile that's not in your frame!");
+                                System.out.println("\n{'o'}:: You can't exchange a tile that's not in your frame!");
                                 break;
                 }
         }
@@ -118,7 +119,7 @@ public class UI {
                 for(int r=0; r < Board.BOARD_DIMENSION; r++) {
                         System.out.printf("%2d| ", row);
                         for(int c=0; c < Board.BOARD_DIMENSION; c++) {
-                                boardChar = board.getBoardValueAt(r, c);
+                                boardChar = board.getBoardCharAt(r, c);
 
                                 if(boardChar == Board.BOARD_TILE_EMPTY) {
                                         switch( Board.BOARD_POSITION_VALUES[r][c] ) {
@@ -152,13 +153,13 @@ public class UI {
         public String getPlayerName(int playerNumber) {
                 Scanner sc = new Scanner(System.in);
                 String playerName;
-                System.out.println("{'-'}:: Player"+playerNumber+", enter your name: ");
+                System.out.print("{'-'}:: Player"+playerNumber+", enter your name: ");
 
                 do {
                         playerName = sc.nextLine();
                         playerName = playerName.trim();
                         if( playerName.equals("") ) {
-                                System.out.println("{'o'}:: You left your name blank....");
+                                System.out.println("\n{'o'}:: You left your name blank....");
                         }
                 } while(playerName.equals(""));
 
@@ -202,7 +203,7 @@ public class UI {
                 } else if( playerCommand.equalsIgnoreCase("Pass") || playerCommand.equalsIgnoreCase("P") ) {
                         return UI_COMMAND_PASS;
                 }
-                System.out.println("{'o'}:: Error, Incorrect syntax; Try using 'Help'");
+                System.out.println("\n{'o'}:: Error, Incorrect syntax; Try using 'Help'");
                 return UI_COMMAND_INVALID;
         }
 
@@ -237,6 +238,6 @@ public class UI {
         }
 
         public static void displayPassMessage() {
-                System.out.println("{'-'}:: You passed your move.. shame");
+                System.out.println("\n{'-'}:: You passed your move.. shame");
         }
 }

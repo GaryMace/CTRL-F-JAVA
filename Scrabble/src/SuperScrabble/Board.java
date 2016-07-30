@@ -1,8 +1,6 @@
 package SuperScrabble;
 
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Stack;
 
 /**
  * Created by Gary on 14/06/2016.
@@ -64,12 +62,15 @@ public class Board {
                 initialize();
         }
 
-        public void playWord(Player player, Move m) {
+        public int playWord(Player player, Move m) {
                 String direction = m.getDirection();
                 String word = m.getWord();
                 int row = m.getLocation().getRow();
                 int col = m.getLocation().getColumn();
+                int wordScore;
 
+                wordScore = getTotalWordScore(m);
+                player.addScore(wordScore);
                 if (isAcross(direction)) {
                         for (int i = 0; i < word.length(); i++) {
                                 if (!isBoardPosOccupied[row][col + i]) {
@@ -87,7 +88,7 @@ public class Board {
                 }
 
                 //Return the word score
-                //getWordScore(m);
+                return wordScore;
         }
 
         public int checkWord(Frame playerFrame, Move m) {
@@ -220,7 +221,6 @@ public class Board {
          * @return true if player has correct tiles, false if they don't
          */
         private boolean doesPlayerHaveNecessaryTiles(Frame playerFrame, Move m) {
-                Stack<Tile> lettersMatched = new Stack<>();
                 Frame testFrame = new Frame(playerFrame);
                 String word = m.getWord();
                 int indexOfCharFromFrame;
@@ -239,10 +239,7 @@ public class Board {
                         } else {
                                 if (isLetterOnBoard(letter, m, i)) {
                                         BOARD_IS_CONFLICT_IGNORABLE = true;
-                                } else {
-                                        lettersMatched.push(testFrame.getTiles().get(indexOfCharFromFrame));
                                 }
-
                         }
                 }
 
@@ -338,58 +335,96 @@ public class Board {
                 boardTilePositions.add(new GridRef(row, col));
         }
 
-        private int getWordScore(Move m) {
-                String word = m.getWord();
-                String direction = m.getDirection();
-                int row = m.getLocation().getRow();
-                int col = m.getLocation().getColumn();
-
-                getNewWordsCreated(m);
-
-
-        }
-
-        private ArrayList<GridRef> getNewWordsCreated(Move m) {
-                ArrayList<GridRef> newWords = new ArrayList<>();
+        private ArrayList<Move> getNewWordsCreated(Move m) {
+                ArrayList<Move> newWords = new ArrayList<>();
                 String word = m.getWord();
                 String direction = m.getDirection();
                 int row = m.getLocation().getRow();
                 int col = m.getLocation().getColumn();
                 Move seed, newWord;
 
+                newWord = growWord(m);
+                newWords.add(newWord);
+
                 for (int i = 0; i < word.length(); i++) {
-                        if (!isBoardPosOccupied[row][col]) {
+                        if (board[row][col] == BOARD_TILE_EMPTY) {
                                 char letter = word.charAt(i);
                                 String oppDirection = m.getOppositeDirection(direction);
                                 seed = new Move(new GridRef(row, col), oppDirection, Character.toString(letter));
                                 newWord = growWord(seed);
+                                if (newWord.getWord().length() > 1) {
+                                        newWords.add(newWord);
+                                }
                         }
-
-
-                        if (isAcross(direction)) {
-                                col++;
-                        } else {
+                        if (isDown(direction)) {
                                 row++;
+                        } else {
+                                col++;
                         }
                 }
                 return newWords;
         }
 
-        private Move growWord(Move word) {
+        private int getWordScore(Move word) {
+                // precondition: checkWord(word,frame) returns WORD_OK
+                int score, wordValue, charValue, charMultiplier = 1, wordMultiplier = 1;
+                int row, column;
+                String letters, direction;
+
+                wordValue = 0;
+                row = word.getLocation().getRow();
+                column = word.getLocation().getColumn();
+                letters = word.getWord();
+                direction = word.getDirection();
+                for (int i = 0; i < letters.length(); i++) {\
+                        charValue = Pool.tileValue(letters.charAt(i));
+                        charMultiplier = 1;  // default
+
+                        if (board[row][column] == BOARD_TILE_EMPTY) {
+                                switch (BOARD_POSITION_VALUES[row][column]) {
+                                        case SINGLE_LETTER:
+                                                break;
+                                        case DOUBLE_LETTER:
+                                                charMultiplier = 2;
+                                                break;
+                                        case TRIPLE_LETTER:
+                                                charMultiplier = 3;
+                                                break;
+                                        case DOUBLE_WORD:
+                                                wordMultiplier = 2 * wordMultiplier;
+                                                break;
+                                        case TRIPLE_WORD:
+                                                wordMultiplier = 3 * wordMultiplier;
+                                }
+                        }
+                        if (isAcross(direction)) {
+                                column++;
+                        } else {
+                                row++;
+                        }
+                        wordValue = wordValue + charValue * charMultiplier;
+                }
+
+                score = wordValue * wordMultiplier;
+                return (score);
+        }
+
+        private Move growWord(Move move) {
                 Move newWord;
-                String direction = word.getDirection();
-                StringBuffer letters = new StringBuffer();
-                int startRow, endRow, startColumn, endColumn, length;
-                startRow = word.getLocation().getRow();
-                startColumn = word.getLocation().getColumn();
-                length = word.getWord().length();
-                letters.append(word.getWord());
+                String direction = move.getDirection();
+                String word = move.getWord();
+                int startRow = move.getLocation().getRow();
+                int startCol = move.getLocation().getColumn();
+                StringBuilder letters = new StringBuilder();
+                int endRow, endColumn, length;
+                length = move.getWord().length();
+                letters.append(word);
 
                 if (isAcross(direction)) {
-                        endColumn = startColumn + length - 1;
-                        while ((startColumn > 0) && (board[startRow][startColumn - 1] != BOARD_TILE_EMPTY)) {
-                                startColumn--;
-                                letters.insert(0, board[startRow][startColumn]);
+                        endColumn = startCol + length - 1;
+                        while ((startCol > 0) && (board[startRow][startCol - 1] != BOARD_TILE_EMPTY)) {
+                                startCol--;
+                                letters.insert(0, board[startRow][startCol]);
                         }
                         while ((endColumn < BOARD_DIMENSION - 1) && (board[startRow][endColumn + 1] != BOARD_TILE_EMPTY)) {
                                 endColumn++;
@@ -397,22 +432,32 @@ public class Board {
                         }
                 } else {
                         endRow = startRow + length - 1;
-                        while ((startRow > 0) && (board[startRow - 1][startColumn] != BOARD_TILE_EMPTY)) {
+                        while ((startRow > 0) && (board[startRow - 1][startCol] != BOARD_TILE_EMPTY)) {
                                 startRow--;
-                                letters.insert(0, board[startRow][startColumn]);
+                                letters.insert(0, board[startRow][startCol]);
                         }
-                        while ((endRow < BOARD_DIMENSION  - 1) && (board[endRow + 1][startColumn] != BOARD_TILE_EMPTY)) {
+                        while ((endRow < BOARD_DIMENSION  - 1) && (board[endRow + 1][startCol] != BOARD_TILE_EMPTY)) {
                                 endRow++;
-                                letters.append(board[endRow][startColumn]);
+                                letters.append(board[endRow][startCol]);
                         }
                 }
-                newWord = new Move(new GridRef(startRow, startColumn), word.getDirection(), letters.toString());
+                newWord = new Move(new GridRef(startRow, startCol), direction, letters.toString());
 
                 return (newWord);
         }
 
-        public char getBoardValueAt(int row, int col) {
-                return this.board[row][col];
+        public int getTotalWordScore(Move word) {
+                int totalWordScore = 0;
+                ArrayList<Move> newWords = getNewWordsCreated(word);
+
+                for (Move newWord : newWords) {
+                        totalWordScore = totalWordScore + getWordScore(newWord);
+                }
+                return (totalWordScore);
+        }
+
+        public char getBoardCharAt(int row, int col) {
+                return board[row][col];
         }
 
         public void reset() {

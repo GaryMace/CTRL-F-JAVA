@@ -41,6 +41,8 @@ public class Scrabble {
         public ArrayList<Player> determineWhoGoesFirst() {
                 char[] tilesDrawn = new char[MAX_PLAYERS];
                 ArrayList<Player> playOrder;
+
+                System.out.println("\n{'-'}:: Determining who goes first:");
                 do {
                         playOrder = new ArrayList<>();
                         for (int i = 0; i < players.length; i++) {
@@ -73,17 +75,19 @@ public class Scrabble {
         public boolean handlePlayerCommand(Player player, int playerCommand) {
                 boolean keepPromptingCurrPlayer = false;
                 int validityFlag;
+                int wordScore;
 
                 switch (playerCommand) {
                         case UI.UI_COMMAND_QUIT:
-                                //ui.showGameResults();
+                                //UI.showGameResults();
                                 UI.goodbyeMessage();
                                 System.exit(0);
                                 break;
                         case UI.UI_COMMAND_PLAY:
                                 validityFlag = validMove(player);
                                 if (validityFlag == UI.UI_NO_ERROR) {
-                                        makeMove(player);
+                                        wordScore = makeMove(player);
+                                        UI.displayWordScore(wordScore, player);
                                 } else {
                                         UI.displayError(validityFlag);
                                         keepPromptingCurrPlayer = true;
@@ -106,6 +110,8 @@ public class Scrabble {
                                         keepPromptingCurrPlayer = true;
                                 }
                                 break;
+                        case UI.UI_COMMAND_CHALLENGE:
+                                break;
                 }
                 return keepPromptingCurrPlayer;
         }
@@ -118,7 +124,7 @@ public class Scrabble {
                 ArrayList<Player> playOrder = new ArrayList<>();
                 playOrder.add(first);
                 playOrder.add(second);
-                System.out.println(first + " goes first!");
+                System.out.println(first + " goes first!\n");
 
                 return playOrder;
         }
@@ -155,8 +161,8 @@ public class Scrabble {
                 return b.checkWord(currPlayer.getFrame(), ui.currentMove());
         }
 
-        public void makeMove(Player currPlayer) {
-                b.playWord(currPlayer, ui.currentMove());
+        public int makeMove(Player currPlayer) {
+                return b.playWord(currPlayer, ui.currentMove());
         }
 
         public void runScrabble() {

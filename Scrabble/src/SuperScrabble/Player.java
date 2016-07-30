@@ -10,6 +10,7 @@ public class Player {
 
         public Player() {
                 pFrame = new Frame();
+                pScore = 0;
         }
 
         public String getName() {
@@ -24,8 +25,8 @@ public class Player {
                 return pScore;
         }
 
-        public void setScore(int pScore) {
-                this.pScore = pScore;
+        public void addScore(int pScore) {
+                this.pScore += pScore;
         }
 
         public Frame getFrame() {
