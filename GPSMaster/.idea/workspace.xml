@@ -27,42 +27,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="GPSMaster.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="GPSMaster.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/GPSMaster.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+            <state relative-caret-position="5956">
+              <caret line="408" column="8" selection-start-line="408" selection-start-column="8" selection-end-line="408" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
                 <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-                <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-                <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-                <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-                <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-                <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-                <element signature="e#16378#16379#0" expanded="true" />
-                <element signature="e#16473#16474#0" expanded="true" />
-                <element signature="e#23674#23675#0" expanded="true" />
-                <element signature="e#23747#23748#0" expanded="true" />
-                <element signature="e#23796#23797#0" expanded="true" />
-                <element signature="e#23842#23843#0" expanded="true" />
-                <element signature="e#23892#23893#0" expanded="true" />
-                <element signature="e#23962#23963#0" expanded="true" />
-                <element signature="e#26981#26982#0" expanded="true" />
-                <element signature="e#27060#27061#0" expanded="true" />
-                <element signature="e#27121#27122#0" expanded="true" />
-                <element signature="e#27180#27181#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Split.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Split.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Split.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1056">
-              <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+            <state relative-caret-position="418">
+              <caret line="53" column="30" selection-start-line="53" selection-start-column="30" selection-end-line="53" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -81,8 +63,8 @@
       <file leaf-file-name="16Km Dunshaughlin.gpx" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/inputFiles/16Km Dunshaughlin.gpx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1496">
-              <caret line="34" column="53" selection-start-line="34" selection-start-column="53" selection-end-line="34" selection-end-column="53" />
+            <state relative-caret-position="882">
+              <caret line="22" column="29" selection-start-line="22" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -101,8 +83,18 @@
       <file leaf-file-name="GlobalPosition.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/GlobalPosition.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="660">
-              <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state relative-caret-position="256">
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Time.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Time.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="212">
+              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -126,9 +118,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/GlobalPosition.java" />
-        <option value="$PROJECT_DIR$/src/Time.java" />
         <option value="$PROJECT_DIR$/src/Split.java" />
         <option value="$PROJECT_DIR$/src/Main.java" />
+        <option value="$PROJECT_DIR$/src/Time.java" />
         <option value="$PROJECT_DIR$/src/GPSMaster.java" />
       </list>
     </option>
@@ -168,7 +160,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -235,7 +227,7 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -772,12 +764,14 @@
       <workItem from="1465825939447" duration="168000" />
       <workItem from="1465912723645" duration="328000" />
       <workItem from="1466255715541" duration="605000" />
-      <workItem from="1470047319222" duration="8814000" />
+      <workItem from="1470047319222" duration="9981000" />
+      <workItem from="1470062652908" duration="571000" />
+      <workItem from="1470065113741" duration="6457000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="156354000" />
+    <option name="totallyTimeSpent" value="164549000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="3200" height="1744" extended-state="0" />
@@ -785,15 +779,15 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3294347" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1719243" sideWeight="0.50292826" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4431449" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4243015" sideWeight="0.49707174" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1761577" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -805,8 +799,8 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.774448" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -895,25 +889,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -922,10 +898,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="14" column="43" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
-          <folding>
-            <element signature="e#954#955#0" expanded="true" />
-            <element signature="e#981#982#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -959,25 +932,7 @@
           <caret line="265" column="130" selection-start-line="265" selection-start-column="130" selection-end-line="265" selection-end-column="130" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -986,10 +941,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#954#955#0" expanded="true" />
-            <element signature="e#981#982#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1023,25 +975,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1076,25 +1010,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1129,25 +1045,7 @@
           <caret line="34" column="26" selection-start-line="34" selection-start-column="26" selection-end-line="34" selection-end-column="26" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1182,25 +1080,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1227,25 +1107,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1272,25 +1134,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1317,25 +1161,7 @@
           <caret line="14" column="64" selection-start-line="14" selection-start-column="64" selection-end-line="14" selection-end-column="64" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1354,25 +1180,7 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
             <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1395,34 +1203,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inputFiles/16Km Dunshaughlin.gpx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1496">
-          <caret line="34" column="53" selection-start-line="34" selection-start-column="53" selection-end-line="34" selection-end-column="53" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/inputFiles/1 Mile Sprint.gpx">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1980">
           <caret line="45" column="14" selection-start-line="45" selection-start-column="14" selection-end-line="45" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Time.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="5" column="24" selection-start-line="5" selection-start-column="24" selection-end-line="5" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/GlobalPosition.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1435,40 +1219,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/GPSMaster.java">
+    <entry file="file://$PROJECT_DIR$/src/GlobalPosition.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#readData#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#readStringAfterToken#0;class#GPSMaster#0" expanded="false" />
-            <element signature="docComment;method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="method#totalDistanceAndTimes#0;class#GPSMaster#0" expanded="false" />
-            <element signature="e#16378#16379#0" expanded="true" />
-            <element signature="e#16473#16474#0" expanded="true" />
-            <element signature="e#23674#23675#0" expanded="true" />
-            <element signature="e#23747#23748#0" expanded="true" />
-            <element signature="e#23796#23797#0" expanded="true" />
-            <element signature="e#23842#23843#0" expanded="true" />
-            <element signature="e#23892#23893#0" expanded="true" />
-            <element signature="e#23962#23963#0" expanded="true" />
-            <element signature="e#26981#26982#0" expanded="true" />
-            <element signature="e#27060#27061#0" expanded="true" />
-            <element signature="e#27121#27122#0" expanded="true" />
-            <element signature="e#27180#27181#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="256">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Time.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/inputFiles/16Km Dunshaughlin.gpx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="882">
+          <caret line="22" column="29" selection-start-line="22" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Split.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1056">
-          <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+        <state relative-caret-position="418">
+          <caret line="53" column="30" selection-start-line="53" selection-start-column="30" selection-end-line="53" selection-end-column="30" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/GPSMaster.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5956">
+          <caret line="408" column="8" selection-start-line="408" selection-start-column="8" selection-end-line="408" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="docComment;method#readDoubleAfterString#0;class#GPSMaster#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

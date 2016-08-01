@@ -4,6 +4,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**{'-'} :: Hi there!
  *
@@ -49,7 +51,6 @@ public final class GPSMaster {
                         //Do something
                 } else {
                         skipToStartOfData();    //TODO: check if this empties the file
-
                         for (int i = 0; i < rawData.size(); i++) {
                                 String line = getRawDataAtLine(i); //Remove all whitespace from line
                                 if (isGPSDataEntry(line)) {
@@ -79,8 +80,8 @@ public final class GPSMaster {
                         timeTakenForSplit += timeBetweenTwoPositions(currPosition, nextPosition);;
                         elevTrackingForSplit += elevationBetweenTwoPositions(currPosition, nextPosition);
                         if (distanceTraveledSoFarInSplit > splitDistance) {
-                                double splitEnhancementSpeed = getEnhancementSpeedForEndOfSplit(i);
-                                double redundantExtraTimeForSplit = adjustTimeTakenOverDistance(splitDistance - distanceTraveledSoFarInSplit, splitEnhancementSpeed);
+                                double splitEnhancementSpeed = getEnhancementSpeedForEndOfSplitAt(i);
+                                double redundantExtraTimeForSplit = adjustTimeTakenOverDistance(splitDistance, splitDistance - distanceTraveledSoFarInSplit, splitEnhancementSpeed);
                                 double timeForSplit = timeTakenForSplit - redundantExtraTimeForSplit;
 
                                 splits.put(splitIndex++, new Split(timeForSplit, splitDistance, elevTrackingForSplit, !GPSMASTER_PROJECTED_SPLIT));
@@ -91,76 +92,6 @@ public final class GPSMaster {
                 }
                 double projectedTime = timeTakenForSplit + getProjectedTimeForUnfinishedSplit(distanceTraveledSoFarInSplit, splitDistance, timeTakenForSplit);
                 splits.put(splitIndex, new Split(projectedTime, splitDistance, elevTrackingForSplit, GPSMASTER_PROJECTED_SPLIT));
-        }
-
-        public static void readData(String fileName) {
-                int hashMapIndex = 0;
-                BufferedReader fileReader;
-                double currLat;
-                double currLon;
-                double currElev;
-                String currTime;
-                boolean needsClosingBrace = false;
-                boolean needsOpeningBrace;
-                GPSMaster.fileName = fileName;
-
-                try {
-                        fileReader = new BufferedReader(new FileReader(fileName));
-                        String line = fileReader.readLine().replaceAll("\\s", "");
-
-                        while (!(line.equalsIgnoreCase("<trkseg>"))) {
-                                line = fileReader.readLine().replaceAll("\\s", "");
-                        }
-
-                        while (!(line.equalsIgnoreCase("</trkseg>"))) {
-                                currLat = 0;
-                                currLon = 0;
-                                currElev = 0;
-                                currTime = "";//consider making an object for this
-                                needsOpeningBrace = true;
-
-                                while (!(line.equalsIgnoreCase("</trkpt>"))) {
-                                        if (line.contains("<trkpt")) {
-                                                needsOpeningBrace = false;
-                                                if (needsClosingBrace == true) {
-                                                        CorruptDataException();
-                                                }
-                                                needsClosingBrace = true;
-                                                currLat = readDoubleAfterString(line, "lat=");
-                                                currLon = readDoubleAfterString(line, "lon=");
-                                        } else if (line.contains("<ele>")) {
-                                                try {
-                                                        currElev = Double.parseDouble(readStringAfterToken(line, "<ele>"));
-                                                } catch (Exception e) {  //handle this
-                                                        CorruptDataException();
-                                                }
-                                        } else if (line.contains("<time>")) {
-                                                currTime = readStringAfterToken(line, "<time>");
-                                                if (currTime == null || currTime.length() == 0) {
-                                                        CorruptDataException();
-                                                }
-                                                currTime = timeFromString(currTime);
-                                        }
-                                        line = fileReader.readLine().replaceAll("\\s", "");
-                                }
-                                needsClosingBrace = false;
-                                if (needsOpeningBrace) {
-                                        CorruptDataException();
-                                }
-                                needsOpeningBrace = true;
-
-                                if (currLat == -1 || currLon == -1 || currTime.equals("") || currElev == 0.0) {
-                                        CorruptDataException();
-                                }
-
-                                line = fileReader.readLine().replaceAll("\\s", "");
-                                positions.add(new GlobalPosition(currLat, currLon, currElev, currTime));
-                        }
-
-                } catch (Exception e) {
-                        System.out.println("Unexpected error opening/reading file (check file format, must be .gpx)");
-                        System.exit(0);
-                }
         }
 
         /**
@@ -186,105 +117,28 @@ public final class GPSMaster {
          * @return double contained within double quotes in line
          */
         private static double readDoubleAfterString(String line, String token) {
-                if (line.contains(token)) {
-                        try {
-                                return Double.parseDouble(line.split(token)[1].split("\"")[1]);
-                        } catch (Exception e) {
-                                CorruptDataException();
-                        }
-                }
+                Pattern toFind = Pattern.compile(token+"\"((-?)\\d+(\\.\\d+))\"");
+                Matcher m = toFind.matcher(line);
 
+                if (m.find()) {
+                        return Double.parseDouble(m.group(1));
+                }
                 return -1;
         }
 
         /**
          * @param line  line to search token for
-         * @param token string to search for in line
+         * @param pattern string to search for in line
          * @return string following directly after token
          */
-        private static String readStringAfterToken(String line, String token) {
-                if (line.contains(token)) {
-                        return line.split(token)[1].split("<")[0];
-                }
+        private static String readStringAfterToken(String line, String pattern) {
+                Pattern toFind = Pattern.compile(pattern);
+                Matcher m = toFind.matcher(line);
 
+                if (m.find()) {
+                        return m.group(1);
+                }
                 return null;
-        }
-
-        /**
-         * Method responsible for getting the splits over 1Km, 1 Mile, the elevations of each split. Stores this data in a Split object.
-         */
-        public static void totalDistanceAndTimes() {
-                double runningDistance = 0;
-                double runningTime = 0;
-                double runningSplitTimeKm = 0;
-                double runningSplitDistanceKm = 0;
-                double runningSplitTimeMile = 0;
-                double runningSplitDistanceMile = 0;
-                double distanceTemp;
-                double timeTemp;
-                double runningElevKm = 0;
-                double runningElevMile = 0;
-                double currElevChange;
-                double endOfSplitTimeKm = 0;
-                double endOfSplitTimeMile = 0;
-                double endOfSplitDistanceKm = 0;
-                double endOfSplitDistanceMile = 0;
-                int splitIndex = 1;
-
-                for (int i = 0; i < positions.size() - 1; i++) {
-                        distanceTemp = haversine(positions.get(i), positions.get(i + 1));
-                        runningSplitDistanceKm += distanceTemp;
-                        runningSplitDistanceMile += distanceTemp;
-                        runningDistance += distanceTemp;
-
-                        timeTemp = timeBetweenTwoPositions(positions.get(i), positions.get(i + 1));
-                        runningSplitTimeKm += timeTemp;
-                        runningSplitTimeMile += timeTemp;
-                        runningTime += timeTemp;
-
-                        currElevChange = (positions.get(i + 1).getElevation() - positions.get(i).getElevation());
-                        runningElevKm += currElevChange;
-                        runningElevMile += currElevChange;
-
-                        //For getting the average speed over the last 25 meters of a split (For readjusting inaccurate distance traveled)
-                        if (runningSplitDistanceKm > 975) {
-                                endOfSplitTimeKm += timeTemp;
-                                endOfSplitDistanceKm += distanceTemp;
-
-                                if (runningSplitDistanceKm > GPSMASTER_KILOMETER) {
-                                        double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceKm - GPSMASTER_KILOMETER, endOfSplitDistanceKm / endOfSplitTimeKm);
-                                        double realSplitTime = runningSplitTimeKm - extraTimeToCarry;
-
-                                        splits.put(splitIndex, new Split(realSplitTime, GPSMASTER_KILOMETER, runningElevKm, false));
-                                        runningSplitTimeKm = extraTimeToCarry;
-                                        runningSplitDistanceKm = runningSplitDistanceKm - GPSMASTER_KILOMETER;
-                                        runningElevKm = 0;
-                                        splitIndex++;
-                                }
-                        }
-
-                        //Done for the same as done above for the Km splits
-                        if (runningSplitDistanceMile > 1584.34) { //use constans for mile or Km
-                                endOfSplitTimeMile += timeTemp;
-                                endOfSplitDistanceMile += distanceTemp;
-
-                                if (runningSplitDistanceMile > GPSMASTER_MILE) {
-                                        double extraTimeToCarry = adjustTimeTakenOverDistance(runningSplitDistanceMile - GPSMASTER_MILE, endOfSplitDistanceMile / endOfSplitTimeMile);
-                                        double realSplitTime = runningSplitTimeMile - extraTimeToCarry;
-
-                                        splits.put(splitIndex, new Split(realSplitTime, GPSMASTER_MILE, runningElevMile, false));
-                                        runningSplitTimeMile = extraTimeToCarry;
-                                        runningSplitDistanceMile = runningSplitDistanceMile - GPSMASTER_MILE;
-                                        runningElevMile = 0;
-                                        splitIndex++;
-                                }
-                        }
-                }
-
-                splits.put(splitIndex++, new Split(runningSplitTimeKm + getProjectedTimeForUnfinishedSplit(runningSplitDistanceKm, GPSMASTER_KILOMETER, runningSplitTimeKm), GPSMASTER_KILOMETER, runningElevKm, true));
-                splits.put(splitIndex++, new Split(runningSplitTimeMile + getProjectedTimeForUnfinishedSplit(runningSplitDistanceMile, GPSMASTER_MILE, runningSplitTimeMile), GPSMASTER_MILE, runningElevMile, true));
-                overallDistance = runningDistance;
-                overallTime = runningTime;
         }
 
         /**
@@ -305,11 +159,13 @@ public final class GPSMaster {
          * @return String in HH:MM:SS format
          */
         private static String timeFromString(String timeString) {
-                int hrs = Integer.parseInt(timeString.substring(11, 13));
-                int mins = Integer.parseInt(timeString.substring(14, 16));
-                float secs = Float.parseFloat(timeString.substring(17, 19));
+                Pattern toFind = Pattern.compile("\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+)");
+                Matcher m = toFind.matcher(timeString);
 
-                return hrs + ":" + mins + ":" + secs;
+                if (m.find()) {
+                        return m.group();
+                }
+                return null;
         }
 
         public static void averageSpeed() {
@@ -358,8 +214,8 @@ public final class GPSMaster {
          * @return Est. time for split
          */
         private static double getProjectedTimeForUnfinishedSplit(double distanceSoFar, double wantedDistance, double timeSoFar) {
-                double avgSpeed = (distanceSoFar / GPSMASTER_KILOMETER) / (timeSoFar / 60 / 60);
-                return (wantedDistance - distanceSoFar) / (((avgSpeed / 60) / 60) * GPSMASTER_KILOMETER);
+                double avgSpeed = (distanceSoFar / wantedDistance) / (timeSoFar / 60 / 60);
+                return (wantedDistance - distanceSoFar) / (((avgSpeed / 60) / 60) * wantedDistance);
         }
 
         //TODO: use average speed over last, say, 50 meters not the entire split! ::Done
@@ -371,8 +227,8 @@ public final class GPSMaster {
          * @param extraDistanceTraveled Extra distance traveled over split
          * @return Time to subtract from this split
          */
-        private static double adjustTimeTakenOverDistance(double extraDistanceTraveled, double speed) {
-                return extraDistanceTraveled / (((speed / 60) / 60) * GPSMASTER_KILOMETER);
+        private static double adjustTimeTakenOverDistance(double distanceWanted, double extraDistanceTraveled, double speed) {
+                return extraDistanceTraveled / (((speed / 60) / 60) * distanceWanted); //distanceWanted was 1000
         }
 
         /**
@@ -502,7 +358,7 @@ public final class GPSMaster {
          * @param index Index into the GPX data
          * @return Avg. Speed for last 25ish meters of split
          */
-        private static double getEnhancementSpeedForEndOfSplit(int index) {
+        private static double getEnhancementSpeedForEndOfSplitAt(int index) {
                 double distanceTracking =0, timeTracking =0;
                 do {
                         GlobalPosition currPosition = positions.get(index), previousPosition = positions.get(index - 1);
@@ -524,14 +380,15 @@ public final class GPSMaster {
 
                 line = getRawDataAtLine(currRawDataIndex++);
                 if (validElevationEntry(line)) {
-                        elevation = Double.parseDouble(readStringAfterToken(line, "<ele>")); //Stop complaining intelliJ it's fine
+                        elevation = Double.parseDouble(readStringAfterToken(line, "<ele>((-?)\\d+(\\.\\d+))</ele>")); //No IntelliJ, it cant be null
                 } else {
                         return GPSMASTER_ERROR_INVALID_ELEVATION_ENTRY;
                 }
 
                 line = getRawDataAtLine(currRawDataIndex);
                 if (validTimeEntry(line)) {
-                        time = timeFromString(readStringAfterToken(line, "<time>"));
+                        String pattern = "<time>(\\d{1,4}(-)\\d{1,2}(-)\\d{1,2}T\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+))Z</time>";
+                        time = timeFromString(readStringAfterToken(line, pattern));
                 } else {
                         return GPSMASTER_ERROR_INVALID_TIME_ENTRY;
                 }
@@ -549,11 +406,7 @@ public final class GPSMaster {
         private static boolean validElevationEntry(String line) {
                 return line.matches("(<ele>)\\d+(\\.\\d+)(</ele>)");
         }
-
-        private static boolean endOfGPSEntry(String line) {
-                return line.matches("</trkpt>");
-        }
-
+        
         private static boolean isGPSDataEntry(String line) {
                 return line.matches("(<trkptlon=\")(-?)\\d+(\\.\\d+)(\"lat=\")(-?)\\d+(\\.\\d+)\">");
         }
