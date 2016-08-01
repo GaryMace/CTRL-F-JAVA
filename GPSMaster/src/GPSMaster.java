@@ -46,7 +46,6 @@ public final class GPSMaster {
         }
 
         public static void getGPSPositions() {
-                int errCode;
                 if (rawData.isEmpty()) {
                         //Do something
                 } else {
@@ -54,7 +53,8 @@ public final class GPSMaster {
                         for (int i = 0; i < rawData.size(); i++) {
                                 String line = getRawDataAtLine(i); //Remove all whitespace from line
                                 if (isGPSDataEntry(line)) {
-                                        errCode = extractGPSEntry(i);   //TODO: handle the error code
+                                        GlobalPosition newPosition = extractGPSEntry(i);   //TODO: handle the error code
+                                        positions.add(newPosition);
                                 }
                         }
                 }
@@ -369,9 +369,8 @@ public final class GPSMaster {
                 return distanceTracking / timeTracking;
         }
 
-        private static int extractGPSEntry(int currRawDataIndex) {
+        private static GlobalPosition extractGPSEntry(int currRawDataIndex) {
                 String line = getRawDataAtLine(currRawDataIndex++);
-                int errCode = GPSMASTER_VALID_DATA_ENTRY;
                 double lat, lon, elevation;
                 String time;
 
@@ -381,19 +380,15 @@ public final class GPSMaster {
                 line = getRawDataAtLine(currRawDataIndex++);
                 if (validElevationEntry(line)) {
                         elevation = Double.parseDouble(readStringAfterToken(line, "<ele>((-?)\\d+(\\.\\d+))</ele>")); //No IntelliJ, it cant be null
-                } else {
-                        return GPSMASTER_ERROR_INVALID_ELEVATION_ENTRY;
                 }
 
                 line = getRawDataAtLine(currRawDataIndex);
                 if (validTimeEntry(line)) {
                         String pattern = "<time>(\\d{1,4}(-)\\d{1,2}(-)\\d{1,2}T\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+))Z</time>";
                         time = timeFromString(readStringAfterToken(line, pattern));
-                } else {
-                        return GPSMASTER_ERROR_INVALID_TIME_ENTRY;
                 }
-                positions.add(new GlobalPosition(lat, lon, elevation, time));
-                return errCode;
+
+                return new GlobalPosition(lat, lon, elevation, time));
         }
 
         private static boolean validTimeEntry(String line) {
@@ -406,7 +401,7 @@ public final class GPSMaster {
         private static boolean validElevationEntry(String line) {
                 return line.matches("(<ele>)\\d+(\\.\\d+)(</ele>)");
         }
-        
+
         private static boolean isGPSDataEntry(String line) {
                 return line.matches("(<trkptlon=\")(-?)\\d+(\\.\\d+)(\"lat=\")(-?)\\d+(\\.\\d+)\">");
         }
