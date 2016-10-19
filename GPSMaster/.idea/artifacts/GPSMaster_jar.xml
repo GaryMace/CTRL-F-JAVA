@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="GPSMaster:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/GPSMaster_jar</output-path>
-    <root id="archive" name="GPSMaster.jar">
-      <element id="module-output" name="GPSMaster" />
-    </root>
-  </artifact>
-</component>
