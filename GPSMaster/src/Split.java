@@ -14,6 +14,12 @@ public class Split {
         this.elevation = elev;
     }
 
+    public Split(double time, double split, double elev) {
+        this.time = time;
+        this.split = split;
+        this.isProjectedSplit = false;
+        this.elevation = elev;
+    }
     private String getSpeed() {
         double speed = (split/1000)/(time/60/60);
         return String.format("%.2f", speed);

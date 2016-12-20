@@ -9,15 +9,14 @@ public class Main {
                 System.out.println("Enter filename:");
                 String fileName = sc.nextLine();
 
-                GPSMaster.readFile(fileName);
-                GPSMaster.getGPSPositions();
-                GPSMaster.getSplitsFor(1000);
+                GPSMaster.readFileAndGPSData(fileName);
+                GPSMaster.getSplitsForDistance(1000);
                 //GPSMaster.averageSpeed();
                 //GPSMaster.averageKMPace();
                 //GPSMaster.averageMilePace();
                 //GPSMaster.writeInfoToFile();
                 /*if (args.length > 0) {
-                        GPSMaster.readFile(args[0]);
+                        GPSMaster.readFileAndGPSData(args[0]);
                         GPSMaster.getGPSPositions();
                         GPSMaster.totalDistanceAndTimes();
                         GPSMaster.averageSpeed();
