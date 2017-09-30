@@ -11,10 +11,10 @@ public class Main {
 
                 GPSMaster.readFileAndGPSData(fileName);
                 GPSMaster.getSplitsForDistance(1000);
-                //GPSMaster.averageSpeed();
-                //GPSMaster.averageKMPace();
-                //GPSMaster.averageMilePace();
-                //GPSMaster.writeInfoToFile();
+                GPSMaster.averageSpeed();
+                GPSMaster.averageKMPace();
+                GPSMaster.averageMilePace();
+                GPSMaster.writeInfoToFile();
                 /*if (args.length > 0) {
                         GPSMaster.readFileAndGPSData(args[0]);
                         GPSMaster.getGPSPositions();

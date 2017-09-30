@@ -32,6 +32,8 @@ public final class GPSMaster {
     private static double avgKMPace;
     private static double avgMilePace;
 
+    private static double prevRedundantTime;
+
     private GPSMaster() {
     }
 
@@ -85,11 +87,17 @@ public final class GPSMaster {
             distanceTraveled += haversine(currPosition, nextPosition);
             timeTaken += timeBetweenTwoPositions(currPosition, nextPosition);
             elevChange += elevationBetweenTwoPositions(currPosition, nextPosition);
+
             if (distanceTraveled > splitDistance) {
                 splits.put(splitIndex++, generateSplitFrom(splitDistance, distanceTraveled, timeTaken, elevChange, i));
+                overallDistance += distanceTraveled;
+                overallTime += timeTaken;
+
                 distanceTraveled = splitDistance - distanceTraveled;
-                //timeTaken = redundantExtraTimeForSplit;
+                timeTaken = prevRedundantTime;
                 elevChange = 0;
+
+
             }
         }
         double projectedTime =
@@ -97,14 +105,16 @@ public final class GPSMaster {
         splits.put(splitIndex, new Split(projectedTime, splitDistance, elevChange, GPS_PROJECTED_SPLIT));
     }
 
-    private static Split generateSplitFrom(double splitSize, double distanceTraveled, double timeTaken, double elevChange, int gpsIndex) {
+    private static Split generateSplitFrom(double splitDistance, double distanceTraveled, double timeTaken, double elevChange, int gpsIndex) {
         double splitEndSpeed = getSpeedAtEndOfSplit(gpsIndex);
         double redundantExtraTimeForSplit =
-            adjustTimeTakenOverDistance(splitSize, splitSize - distanceTraveled, splitEndSpeed);
+            adjustTimeTakenOverDistance(splitDistance, distanceTraveled - splitDistance, splitEndSpeed);
         double timeForSplit = timeTaken - redundantExtraTimeForSplit;
 
-        timeTaken = redundantExtraTimeForSplit; //Not sure if this does what I want it too,  pass by reference though ?
-        return new Split(timeForSplit, splitSize, elevChange);
+        prevRedundantTime = redundantExtraTimeForSplit;
+
+        //timeTaken = redundantExtraTimeForSplit; //Not sure if this does what I want it t]oo,  pass by reference though ?
+        return new Split(timeForSplit, splitDistance, elevChange);
     }
     /**
      * This method takes in two global positions as input and calculates the distance between them in meters.
@@ -146,7 +156,6 @@ public final class GPSMaster {
     private static String readStringAfterToken(String line, String pattern) {
         Pattern toFind = Pattern.compile(pattern);
         Matcher m = toFind.matcher(line);
-
         if (m.find()) {
             return m.group(1);
         }
@@ -171,9 +180,8 @@ public final class GPSMaster {
      * @return String in HH:MM:SS format
      */
     private static String timeFromString(String timeString) {
-        Pattern toFind = Pattern.compile("\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+)");
+        Pattern toFind = Pattern.compile("\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+)?");
         Matcher m = toFind.matcher(timeString);
-
         if (m.find()) {
             return m.group();
         }
@@ -381,8 +389,9 @@ public final class GPSMaster {
             elevation = Double.parseDouble(readStringAfterToken(line, "<ele>((-?)\\d+(\\.\\d+))</ele>"));
 
         line = getRawDataAtLine(currRawDataIndex);
+
         if (validTimeEntry(line)) {
-            String pattern = "<time>(\\d{1,4}(-)\\d{1,2}(-)\\d{1,2}T\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+))Z</time>";
+            String pattern = "<time>(\\d{1,4}(-)\\d{1,2}(-)\\d{1,2}T\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+)?)Z</time>";
             time = timeFromString(readStringAfterToken(line, pattern));
         }
 
@@ -391,8 +400,7 @@ public final class GPSMaster {
 
     private static boolean validTimeEntry(String line) {
         String dateRegex = "\\d{1,4}(-)\\d{1,2}(-)\\d{1,2}";
-        String timeRegex = "\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+)";
-
+        String timeRegex = "\\d{1,2}(:)\\d{1,2}(:)\\d+(\\.\\d+)?";
         return line.matches("(<time>)" + dateRegex + "T" + timeRegex + "(Z</time>)");
     }
 
@@ -401,13 +409,14 @@ public final class GPSMaster {
     }
 
     private static boolean isGPSDataEntry(String line) {
-        return line.matches("(<trkptlon=\")(-?)\\d+(\\.\\d+)(\"lat=\")(-?)\\d+(\\.\\d+)\">");
+        return line.matches("(<trkptlon=\")(-?)\\d+(\\.\\d+)(\"lat=\")(-?)\\d+(\\.\\d+)\">") ||
+                line.matches("(<trkptlat=\")(-?)\\d+(\\.\\d+)(\"lon=\")(-?)\\d+(\\.\\d+)\">");
     }
 
     private static void skipToStartOfData() {
-        while (!getRawDataAtLine(0).matches("<trkseg>")) {
+        while (!getRawDataAtLine(0).matches("<trkseg>"))
             rawData.remove(0);
-        }
+
         if (rawData.size() > 0) rawData.remove(0); //Removes the <trkseg> line
     }
 }
