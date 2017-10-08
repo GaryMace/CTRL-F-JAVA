@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * {'-'} :: Hi there!
  *
- * Last Modified: 29th October 2016
+ * Last Modified: 27th September 2017
  * Created by Gary on 24-Nov-15.
  */
 public final class GPSMaster {
@@ -33,7 +33,7 @@ public final class GPSMaster {
     private static double avgMilePace;
 
     private static double prevRedundantTime;
-
+    private static int splitIndex = 0;
     private GPSMaster() {
     }
 
@@ -78,7 +78,8 @@ public final class GPSMaster {
         double distanceTraveled = 0;
         double timeTaken = 0;
         double elevChange = 0;
-        int splitIndex = 0;
+        overallTime = 0;
+        overallDistance = 0;
 
         for (int i = 0; i < positions.size() - 1; i++) {
             currPosition = positions.get(i);
@@ -90,14 +91,10 @@ public final class GPSMaster {
 
             if (distanceTraveled > splitDistance) {
                 splits.put(splitIndex++, generateSplitFrom(splitDistance, distanceTraveled, timeTaken, elevChange, i));
-                overallDistance += distanceTraveled;
-                overallTime += timeTaken;
 
-                distanceTraveled = splitDistance - distanceTraveled;
+                distanceTraveled = distanceTraveled - splitDistance;
                 timeTaken = prevRedundantTime;
                 elevChange = 0;
-
-
             }
         }
         double projectedTime =
@@ -112,6 +109,8 @@ public final class GPSMaster {
         double timeForSplit = timeTaken - redundantExtraTimeForSplit;
 
         prevRedundantTime = redundantExtraTimeForSplit;
+        overallDistance += splitDistance;
+        overallTime += timeTaken - prevRedundantTime;
 
         //timeTaken = redundantExtraTimeForSplit; //Not sure if this does what I want it t]oo,  pass by reference though ?
         return new Split(timeForSplit, splitDistance, elevChange);
@@ -317,7 +316,7 @@ public final class GPSMaster {
             }
             writer.append(KmSplits);
             writer.append("\n\n");
-            writer.append("Split:,Avg Speed(km/h),Pace(m/M),Elevation(m)\n");
+            writer.append("Split:,Avg Speed(m/h),Pace(m/M),Elevation(m)\n");
             writer.append(MileSplits);
             writer.append("\n\n");
             writer.append("Total Distance(m):," + getOverallDistance() + "\n");

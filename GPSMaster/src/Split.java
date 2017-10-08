@@ -21,12 +21,11 @@ public class Split {
         this.elevation = elev;
     }
     private String getSpeed() {
-        double speed = (split/1000)/(time/60/60);
+        double speed = (split/split)/(time/60/60);
         return String.format("%.2f", speed);
     }
 
     private String getPace() {
-        String str ="";
         double secsToMins = time/60;
         int mins = 0;
 

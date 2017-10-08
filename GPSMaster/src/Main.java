@@ -11,6 +11,7 @@ public class Main {
 
                 GPSMaster.readFileAndGPSData(fileName);
                 GPSMaster.getSplitsForDistance(1000);
+                GPSMaster.getSplitsForDistance(1609.34);
                 GPSMaster.averageSpeed();
                 GPSMaster.averageKMPace();
                 GPSMaster.averageMilePace();
